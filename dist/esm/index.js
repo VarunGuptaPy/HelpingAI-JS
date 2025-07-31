@@ -21,9 +21,11 @@ export { HelpingAI } from './client';
 export * from './types';
 export * from './errors';
 // Export tools system selectively to avoid conflicts
-export { tools, getTools, getRegistry, clearRegistry } from './tools';
+export { tools, getTools, getRegistry, clearRegistry, executeTool } from './tools';
+// Export builtin tools
+export { executeBuiltinTool, isBuiltinTool, getBuiltinToolClass, getAvailableBuiltinTools, createBuiltinTool, getBuiltinToolDefinition, CodeInterpreterTool, WebSearchTool, BUILTIN_TOOLS_REGISTRY, } from './tools/builtin';
 // Export MCP integration selectively to avoid conflicts
-export { MCPClient, MCPManager } from './mcp';
+// export { MCPManager } from './mcp'; // Commented out to avoid conflicts
 // Re-export for compatibility
 export { HelpingAI as HAI } from './client';
 // Version

@@ -46,10 +46,6 @@ export declare class HelpingAI {
      */
     private createAsyncIterable;
     /**
-     * Execute built-in tool
-     */
-    private executeBuiltinTool;
-    /**
      * List available models
      */
     private listModels;

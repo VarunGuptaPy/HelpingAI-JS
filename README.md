@@ -24,15 +24,13 @@ pnpm add helpingai-js
 import { HelpingAI } from 'helpingai-js';
 
 const client = new HelpingAI({
-  apiKey: 'your-api-key-here'
+  apiKey: 'your-api-key-here',
 });
 
 async function main() {
   const response = await client.chat.completions.create({
     model: 'Dhanishtha-2.0-preview',
-    messages: [
-      { role: 'user', content: 'Hello! How are you today?' }
-    ]
+    messages: [{ role: 'user', content: 'Hello! How are you today?' }],
   });
 
   console.log(response.choices[0].message.content);
@@ -114,7 +112,7 @@ Get your API key from the [HelpingAI Dashboard](https://dashboard.helpingai.com)
 ```typescript
 // Method 1: Direct initialization
 const client = new HelpingAI({
-  apiKey: 'your-api-key-here'
+  apiKey: 'your-api-key-here',
 });
 
 // Method 2: Environment variable (Node.js)
@@ -126,7 +124,7 @@ const client = new HelpingAI({
   apiKey: process.env.HELPINGAI_API_KEY,
   baseURL: 'https://api.helpingai.com/v1', // Optional custom endpoint
   timeout: 30000, // Optional timeout in milliseconds
-  maxRetries: 3 // Optional retry configuration
+  maxRetries: 3, // Optional retry configuration
 });
 ```
 
@@ -152,8 +150,8 @@ const client = new HelpingAI({
   timeout: 30000, // 30 seconds
   maxRetries: 3,
   defaultHeaders: {
-    'User-Agent': 'MyApp/1.0'
-  }
+    'User-Agent': 'MyApp/1.0',
+  },
 });
 ```
 
@@ -164,10 +162,10 @@ const response = await client.chat.completions.create({
   model: 'Dhanishtha-2.0-preview',
   messages: [
     { role: 'system', content: 'You are a helpful assistant.' },
-    { role: 'user', content: 'Explain quantum computing' }
+    { role: 'user', content: 'Explain quantum computing' },
   ],
   max_tokens: 1000,
-  temperature: 0.7
+  temperature: 0.7,
 });
 ```
 
@@ -177,7 +175,7 @@ const response = await client.chat.completions.create({
 const stream = await client.chat.completions.create({
   model: 'Dhanishtha-2.0-preview',
   messages: [{ role: 'user', content: 'Tell me a story' }],
-  stream: true
+  stream: true,
 });
 
 for await (const chunk of stream) {
@@ -196,14 +194,12 @@ import { HelpingAI } from 'helpingai-js';
 
 async function basicChat() {
   const client = new HelpingAI({ apiKey: 'your-api-key' });
-  
+
   const response = await client.chat.completions.create({
     model: 'Dhanishtha-2.0-preview',
-    messages: [
-      { role: 'user', content: 'What is emotional intelligence?' }
-    ]
+    messages: [{ role: 'user', content: 'What is emotional intelligence?' }],
   });
-  
+
   console.log(response.choices[0].message.content);
 }
 ```
@@ -224,15 +220,13 @@ const weatherTool = tools(function getWeather(city: string): string {
 
 async function toolExample() {
   const client = new HelpingAI({ apiKey: 'your-api-key' });
-  
+
   const response = await client.chat.completions.create({
     model: 'Dhanishtha-2.0-preview',
-    messages: [
-      { role: 'user', content: 'What\'s the weather in Paris?' }
-    ],
-    tools: [weatherTool]
+    messages: [{ role: 'user', content: "What's the weather in Paris?" }],
+    tools: [weatherTool],
   });
-  
+
   console.log(response.choices[0].message.content);
 }
 ```
@@ -242,13 +236,11 @@ async function toolExample() {
 ```typescript
 async function streamingExample() {
   const client = new HelpingAI({ apiKey: 'your-api-key' });
-  
+
   const stream = await client.chat.completions.create({
     model: 'Dhanishtha-2.0-preview',
-    messages: [
-      { role: 'user', content: 'Write a poem about AI' }
-    ],
-    stream: true
+    messages: [{ role: 'user', content: 'Write a poem about AI' }],
+    stream: true,
   });
 
   let content = '';
@@ -257,7 +249,7 @@ async function streamingExample() {
       content += chunk.choices[0].delta.content;
       process.stdout.write(chunk.choices[0].delta.content);
     }
-    
+
     if (chunk.choices[0].finish_reason) {
       console.log('\n\nStream completed!');
       break;
@@ -274,10 +266,10 @@ async function streamingExample() {
 
 ```typescript
 interface HelpingAIOptions {
-  apiKey?: string;           // API key (required)
-  baseURL?: string;          // Base API URL
-  timeout?: number;          // Request timeout in ms
-  maxRetries?: number;       // Max retry attempts
+  apiKey?: string; // API key (required)
+  baseURL?: string; // Base API URL
+  timeout?: number; // Request timeout in ms
+  maxRetries?: number; // Max retry attempts
   defaultHeaders?: Record<string, string>; // Default headers
 }
 ```
@@ -292,15 +284,15 @@ interface HelpingAIOptions {
 
 ```typescript
 interface ChatCompletionRequest {
-  model: string;                    // Model name
-  messages: ChatMessage[];          // Conversation messages
-  max_tokens?: number;              // Maximum tokens to generate
-  temperature?: number;             // Randomness (0-2)
-  top_p?: number;                   // Nucleus sampling
-  stream?: boolean;                 // Enable streaming
-  tools?: Tool[];                   // Available tools
+  model: string; // Model name
+  messages: ChatMessage[]; // Conversation messages
+  max_tokens?: number; // Maximum tokens to generate
+  temperature?: number; // Randomness (0-2)
+  top_p?: number; // Nucleus sampling
+  stream?: boolean; // Enable streaming
+  tools?: Tool[]; // Available tools
   tool_choice?: 'auto' | 'none' | string; // Tool selection
-  stop?: string | string[];         // Stop sequences
+  stop?: string | string[]; // Stop sequences
 }
 ```
 
@@ -310,7 +302,7 @@ interface ChatCompletionRequest {
 interface ChatMessage {
   role: 'system' | 'user' | 'assistant' | 'tool';
   content: string;
-  name?: string;        // For tool messages
+  name?: string; // For tool messages
   tool_calls?: ToolCall[]; // For assistant messages with tools
 }
 ```
@@ -347,12 +339,12 @@ const userManager = tools(function createUser(
   if (!name || !email) {
     throw new Error('Name and email are required');
   }
-  
+
   return {
     id: Math.random().toString(36).substr(2, 9),
     name,
     email,
-    age
+    age,
   };
 });
 ```
@@ -377,21 +369,100 @@ clearRegistry();
 
 ### Built-in Tools
 
-HelpingAI provides several built-in tools:
+HelpingAI provides powerful built-in tools inspired by Qwen-Agent:
 
-- `code_interpreter` - Execute code safely
-- `web_search` - Search the web for information
-- `file_reader` - Read and analyze files
-- `image_analyzer` - Analyze images and visual content
+#### `code_interpreter` - Python Code Execution
+
+Execute Python code in a secure sandboxed environment with data science capabilities:
+
+```typescript
+import { HelpingAI } from 'helpingai-js';
+
+const client = new HelpingAI({ apiKey: 'your-api-key' });
+
+// Direct tool call
+const result = await client.call('code_interpreter', {
+  code: `
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Generate sample data
+x = np.linspace(0, 10, 100)
+y = np.sin(x)
+
+# Create plot
+plt.figure(figsize=(10, 6))
+plt.plot(x, y, 'b-', linewidth=2)
+plt.title('Sine Wave')
+plt.xlabel('X values')
+plt.ylabel('Y values')
+plt.grid(True)
+plt.show()
+
+print("Plot generated successfully!")
+`,
+});
+
+console.log(result);
+```
+
+Features:
+
+- **Automatic imports**: numpy, pandas, matplotlib, seaborn
+- **Plot auto-saving**: Automatically saves matplotlib plots
+- **Timeout protection**: 30-second execution limit
+- **Working directory**: Isolated temporary workspace
+- **Error handling**: Comprehensive error reporting
+
+#### `web_search` - Real-time Web Search
+
+Search the web for current information using the Snapzion Search API:
+
+```typescript
+// Direct tool call
+const searchResult = await client.call('web_search', {
+  query: 'latest AI developments 2024',
+  max_results: 5,
+});
+
+console.log(searchResult);
+```
+
+Features:
+
+- **Real-time results**: Current web information
+- **Rich metadata**: Titles, snippets, URLs, sources
+- **Configurable limits**: 1-10 results per search
+- **Structured output**: Well-formatted results
+- **Error resilience**: Graceful fallback handling
+
+#### Using Built-in Tools
+
+```typescript
+import { executeBuiltinTool, isBuiltinTool, getAvailableBuiltinTools } from 'helpingai-js';
+
+// Check available tools
+console.log('Available tools:', getAvailableBuiltinTools());
+
+// Check if a tool exists
+if (isBuiltinTool('web_search')) {
+  const result = await executeBuiltinTool('web_search', {
+    query: 'TypeScript tutorials',
+  });
+}
+
+// Direct execution
+const codeResult = await executeBuiltinTool('code_interpreter', {
+  code: 'print("Hello from Python!")',
+});
+```
 
 ```typescript
 // Using built-in tools
 const response = await client.chat.completions.create({
   model: 'Dhanishtha-2.0-preview',
-  messages: [
-    { role: 'user', content: 'Search for recent AI developments' }
-  ],
-  tools: ['web_search']
+  messages: [{ role: 'user', content: 'Search for recent AI developments' }],
+  tools: ['web_search'],
 });
 ```
 
@@ -404,27 +475,25 @@ import { HelpingAI, MCPClient } from 'helpingai-js';
 
 async function mcpExample() {
   const client = new HelpingAI({ apiKey: 'your-api-key' });
-  
+
   // Connect to MCP server
   const mcpClient = new MCPClient({
     transport: {
       type: 'stdio',
       command: 'node',
-      args: ['path/to/mcp-server.js']
-    }
+      args: ['path/to/mcp-server.js'],
+    },
   });
-  
+
   await mcpClient.connect();
-  
+
   // Use MCP tools in chat
   const response = await client.chat.completions.create({
     model: 'Dhanishtha-2.0-preview',
-    messages: [
-      { role: 'user', content: 'Get my calendar events for today' }
-    ],
-    mcp: mcpClient
+    messages: [{ role: 'user', content: 'Get my calendar events for today' }],
+    mcp: mcpClient,
   });
-  
+
   await mcpClient.disconnect();
 }
 ```
@@ -437,7 +506,7 @@ async function mcpExample() {
 const stream = await client.chat.completions.create({
   model: 'Dhanishtha-2.0-preview',
   messages: [{ role: 'user', content: 'Tell me about space' }],
-  stream: true
+  stream: true,
 });
 
 for await (const chunk of stream) {
@@ -454,7 +523,7 @@ async function advancedStreaming() {
   const stream = await client.chat.completions.create({
     model: 'Dhanishtha-2.0-preview',
     messages: [{ role: 'user', content: 'Explain machine learning' }],
-    stream: true
+    stream: true,
   });
 
   let fullContent = '';
@@ -467,11 +536,11 @@ async function advancedStreaming() {
         const content = chunk.choices[0].delta.content;
         fullContent += content;
         tokenCount++;
-        
+
         // Real-time processing
         process.stdout.write(content);
       }
-      
+
       if (chunk.choices[0].finish_reason) {
         const duration = Date.now() - startTime;
         console.log(`\n\nCompleted in ${duration}ms`);
@@ -490,18 +559,18 @@ async function advancedStreaming() {
 ### Error Types
 
 ```typescript
-import { 
-  HelpingAIError, 
-  APIError, 
-  AuthenticationError, 
+import {
+  HelpingAIError,
+  APIError,
+  AuthenticationError,
   RateLimitError,
-  TimeoutError 
+  TimeoutError,
 } from 'helpingai-js';
 
 try {
   const response = await client.chat.completions.create({
     model: 'Dhanishtha-2.0-preview',
-    messages: [{ role: 'user', content: 'Hello' }]
+    messages: [{ role: 'user', content: 'Hello' }],
   });
 } catch (error) {
   if (error instanceof AuthenticationError) {
@@ -520,12 +589,11 @@ try {
 
 ### Retry Configuration
 
-
 ```typescript
 const client = new HelpingAI({
   apiKey: 'your-api-key',
   maxRetries: 3,
-  timeout: 30000
+  timeout: 30000,
 });
 
 // Custom retry logic
@@ -535,7 +603,7 @@ async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
       return await fn();
     } catch (error) {
       if (i === maxRetries - 1) throw error;
-      
+
       // Exponential backoff
       const delay = Math.pow(2, i) * 1000;
       await new Promise(resolve => setTimeout(resolve, delay));
@@ -550,13 +618,13 @@ async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
 ```typescript
 async function robustChat(message: string) {
   const client = new HelpingAI({ apiKey: 'your-api-key' });
-  
+
   try {
     const response = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
-      messages: [{ role: 'user', content: message }]
+      messages: [{ role: 'user', content: message }],
     });
-    
+
     return response.choices[0].message.content;
   } catch (error) {
     if (error instanceof RateLimitError) {
@@ -586,16 +654,17 @@ const client: HelpingAI = new HelpingAI({ apiKey: 'your-api-key' });
 // Typed responses
 const response: ChatCompletionResponse = await client.chat.completions.create({
   model: 'Dhanishtha-2.0-preview',
-  messages: [{ role: 'user', content: 'Hello' }]
+  messages: [{ role: 'user', content: 'Hello' }],
 });
 
 // Type-safe tool definitions
-const typedTool: Tool = tools(function processData(
-  data: { id: number; name: string }[]
-): { processed: number; items: string[] } {
+const typedTool: Tool = tools(function processData(data: { id: number; name: string }[]): {
+  processed: number;
+  items: string[];
+} {
   return {
     processed: data.length,
-    items: data.map(item => item.name)
+    items: data.map(item => item.name),
   };
 });
 ```
@@ -618,17 +687,18 @@ interface CustomCompletionRequest extends ChatCompletionRequest {
 
 ### Key Differences
 
-| Python | JavaScript/TypeScript |
-|--------|----------------------|
-| `from helpingai import HelpingAI` | `import { HelpingAI } from 'helpingai-js'` |
-| `@tools` decorator | `tools()` function wrapper |
-| `client.chat.completions.create()` | Same API |
-| Snake case (`max_tokens`) | Same (maintains API compatibility) |
-| `async for chunk in stream:` | `for await (const chunk of stream)` |
+| Python                             | JavaScript/TypeScript                      |
+| ---------------------------------- | ------------------------------------------ |
+| `from helpingai import HelpingAI`  | `import { HelpingAI } from 'helpingai-js'` |
+| `@tools` decorator                 | `tools()` function wrapper                 |
+| `client.chat.completions.create()` | Same API                                   |
+| Snake case (`max_tokens`)          | Same (maintains API compatibility)         |
+| `async for chunk in stream:`       | `for await (const chunk of stream)`        |
 
 ### Python to JavaScript Examples
 
 **Python:**
+
 ```python
 from helpingai import HelpingAI, tools
 
@@ -646,6 +716,7 @@ response = client.chat.completions.create(
 ```
 
 **JavaScript:**
+
 ```typescript
 import { HelpingAI, tools } from 'helpingai-js';
 
@@ -660,7 +731,7 @@ const client = new HelpingAI({ apiKey: 'your-key' });
 const response = await client.chat.completions.create({
   model: 'Dhanishtha-2.0-preview',
   messages: [{ role: 'user', content: 'Weather in Paris?' }],
-  tools: [getWeather]
+  tools: [getWeather],
 });
 ```
 
@@ -712,7 +783,7 @@ HelpingAI-js/
   "scripts": {
     "build": "npm run build:cjs && npm run build:esm && npm run build:types",
     "build:cjs": "tsc -p tsconfig.cjs.json",
-    "build:esm": "tsc -p tsconfig.esm.json", 
+    "build:esm": "tsc -p tsconfig.esm.json",
     "build:types": "tsc -p tsconfig.types.json",
     "dev": "tsc --watch",
     "test": "jest",
@@ -763,7 +834,7 @@ describe('HelpingAI Client', () => {
   test('should create chat completion', async () => {
     const response = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
-      messages: [{ role: 'user', content: 'Hello' }]
+      messages: [{ role: 'user', content: 'Hello' }],
     });
 
     expect(response.choices).toHaveLength(1);
@@ -797,31 +868,29 @@ The SDK works in all modern browsers with ES2018+ support:
 ```html
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>HelpingAI Browser Example</title>
-</head>
-<body>
+  </head>
+  <body>
     <script type="module">
-        import { HelpingAI } from 'https://cdn.skypack.dev/helpingai-js';
-        
-        const client = new HelpingAI({
-            apiKey: 'your-api-key-here'
+      import { HelpingAI } from 'https://cdn.skypack.dev/helpingai-js';
+
+      const client = new HelpingAI({
+        apiKey: 'your-api-key-here',
+      });
+
+      async function chat() {
+        const response = await client.chat.completions.create({
+          model: 'Dhanishtha-2.0-preview',
+          messages: [{ role: 'user', content: 'Hello from the browser!' }],
         });
-        
-        async function chat() {
-            const response = await client.chat.completions.create({
-                model: 'Dhanishtha-2.0-preview',
-                messages: [
-                    { role: 'user', content: 'Hello from the browser!' }
-                ]
-            });
-            
-            document.body.innerHTML = response.choices[0].message.content;
-        }
-        
-        chat().catch(console.error);
+
+        document.body.innerHTML = response.choices[0].message.content;
+      }
+
+      chat().catch(console.error);
     </script>
-</body>
+  </body>
 </html>
 ```
 
@@ -839,19 +908,19 @@ The SDK works in all modern browsers with ES2018+ support:
 ```typescript
 // ✅ Good - Server-side usage
 const client = new HelpingAI({
-  apiKey: process.env.HELPINGAI_API_KEY
+  apiKey: process.env.HELPINGAI_API_KEY,
 });
 
 // ❌ Bad - Client-side exposure
 const client = new HelpingAI({
-  apiKey: 'sk-...' // Never hardcode keys
+  apiKey: 'sk-...', // Never hardcode keys
 });
 
 // ✅ Good - Proxy pattern for browsers
 // Create a server endpoint that proxies requests
 fetch('/api/chat', {
   method: 'POST',
-  body: JSON.stringify({ message: 'Hello' })
+  body: JSON.stringify({ message: 'Hello' }),
 });
 ```
 
@@ -871,14 +940,14 @@ fetch('/api/chat', {
 const client = new HelpingAI({
   apiKey: 'your-api-key',
   timeout: 30000,
-  maxRetries: 3
+  maxRetries: 3,
 });
 
 // Monitor response times
 const startTime = Date.now();
 const response = await client.chat.completions.create({
   model: 'Dhanishtha-2.0-preview',
-  messages: [{ role: 'user', content: 'Hello' }]
+  messages: [{ role: 'user', content: 'Hello' }],
 });
 const duration = Date.now() - startTime;
 

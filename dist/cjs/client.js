@@ -7,6 +7,7 @@ exports.HAI = exports.HelpingAI = void 0;
 const errors_1 = require("./errors");
 const manager_1 = require("./mcp/manager");
 const core_1 = require("./tools/core");
+const builtin_1 = require("./tools/builtin");
 class HelpingAI {
     constructor(config = {}) {
         /**
@@ -16,8 +17,8 @@ class HelpingAI {
             completions: {
                 create: async (request) => {
                     return this.createChatCompletion(request);
-                }
-            }
+                },
+            },
         };
         /**
          * Models API
@@ -28,14 +29,14 @@ class HelpingAI {
             },
             retrieve: async (modelId) => {
                 return this.retrieveModel(modelId);
-            }
+            },
         };
         this.config = {
             apiKey: config.apiKey || '',
             baseURL: config.baseURL || 'https://api.helpingai.co/v1',
             timeout: config.timeout || 30000,
             organization: config.organization || '',
-            defaultHeaders: config.defaultHeaders || {}
+            defaultHeaders: config.defaultHeaders || {},
         };
         if (!this.config.apiKey) {
             console.warn('HelpingAI API key not provided. Set HAI_API_KEY environment variable or pass apiKey in config.');
@@ -55,8 +56,8 @@ class HelpingAI {
                 return await (0, core_1.executeTool)(toolName, args);
             }
             // Handle built-in tools
-            if (toolName === 'code_interpreter' || toolName === 'web_search') {
-                return await this.executeBuiltinTool(toolName, args);
+            if ((0, builtin_1.isBuiltinTool)(toolName)) {
+                return await (0, builtin_1.executeBuiltinTool)(toolName, args);
             }
             throw new errors_1.ToolExecutionError(`Tool '${toolName}' not found`, toolName);
         }
@@ -72,7 +73,7 @@ class HelpingAI {
         const processedTools = await this.processTools(request.tools);
         const requestBody = {
             ...request,
-            ...(processedTools && { tools: processedTools })
+            ...(processedTools && { tools: processedTools }),
         };
         if (request.stream) {
             return this.createStreamingCompletion(requestBody);
@@ -118,7 +119,7 @@ class HelpingAI {
     async createNonStreamingCompletion(request) {
         const response = await this.makeRequest('/chat/completions', {
             method: 'POST',
-            body: JSON.stringify(request)
+            body: JSON.stringify(request),
         });
         return response;
     }
@@ -132,8 +133,8 @@ class HelpingAI {
             const eventSource = new EventSource(url, {
                 headers: {
                     ...headers,
-                    'Content-Type': 'application/json'
-                }
+                    'Content-Type': 'application/json',
+                },
             });
             const chunks = [];
             let resolved = false;
@@ -180,20 +181,6 @@ class HelpingAI {
         }
     }
     /**
-     * Execute built-in tool
-     */
-    async executeBuiltinTool(toolName, args) {
-        // Mock implementation for built-in tools
-        switch (toolName) {
-            case 'code_interpreter':
-                return `Code execution result for: ${JSON.stringify(args)}`;
-            case 'web_search':
-                return `Web search results for: ${JSON.stringify(args)}`;
-            default:
-                throw new errors_1.ToolExecutionError(`Unknown built-in tool: ${toolName}`, toolName);
-        }
-    }
-    /**
      * List available models
      */
     async listModels() {
@@ -220,9 +207,9 @@ class HelpingAI {
                 ...options,
                 headers: {
                     ...headers,
-                    ...options.headers
+                    ...options.headers,
                 },
-                signal: controller.signal
+                signal: controller.signal,
             });
             clearTimeout(timeoutId);
             if (!response.ok) {
@@ -249,7 +236,7 @@ class HelpingAI {
         const headers = {
             'Content-Type': 'application/json',
             'User-Agent': 'HelpingAI-JS/1.0.0',
-            ...this.config.defaultHeaders
+            ...this.config.defaultHeaders,
         };
         if (this.config.apiKey) {
             headers['Authorization'] = `Bearer ${this.config.apiKey}`;

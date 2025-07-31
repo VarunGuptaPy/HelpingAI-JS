@@ -5,23 +5,19 @@
 // Simplified implementation - dependencies will be available at runtime
 declare const fetch: any;
 declare const EventSource: any;
-import { 
-  HelpingAIConfig, 
-  ChatCompletionRequest, 
-  ChatCompletionResponse, 
+import {
+  HelpingAIConfig,
+  ChatCompletionRequest,
+  ChatCompletionResponse,
   ChatCompletionChunk,
   ToolDefinition,
   Model,
-  ModelList
+  ModelList,
 } from './types';
-import { 
-  parseErrorResponse, 
-  TimeoutError, 
-  NetworkError, 
-  ToolExecutionError 
-} from './errors';
+import { parseErrorResponse, TimeoutError, NetworkError, ToolExecutionError } from './errors';
 import { MCPManager } from './mcp/manager';
 import { executeTool, getRegistry } from './tools/core';
+import { executeBuiltinTool, isBuiltinTool } from './tools/builtin';
 
 export class HelpingAI {
   private config: Required<HelpingAIConfig>;
@@ -33,11 +29,13 @@ export class HelpingAI {
       baseURL: config.baseURL || 'https://api.helpingai.co/v1',
       timeout: config.timeout || 30000,
       organization: config.organization || '',
-      defaultHeaders: config.defaultHeaders || {}
+      defaultHeaders: config.defaultHeaders || {},
     };
 
     if (!this.config.apiKey) {
-      console.warn('HelpingAI API key not provided. Set HAI_API_KEY environment variable or pass apiKey in config.');
+      console.warn(
+        'HelpingAI API key not provided. Set HAI_API_KEY environment variable or pass apiKey in config.'
+      );
     }
   }
 
@@ -46,10 +44,12 @@ export class HelpingAI {
    */
   public chat = {
     completions: {
-      create: async (request: ChatCompletionRequest): Promise<ChatCompletionResponse | AsyncIterable<ChatCompletionChunk>> => {
+      create: async (
+        request: ChatCompletionRequest
+      ): Promise<ChatCompletionResponse | AsyncIterable<ChatCompletionChunk>> => {
         return this.createChatCompletion(request);
-      }
-    }
+      },
+    },
   };
 
   /**
@@ -61,7 +61,7 @@ export class HelpingAI {
     },
     retrieve: async (modelId: string): Promise<Model> => {
       return this.retrieveModel(modelId);
-    }
+    },
   };
 
   /**
@@ -80,8 +80,8 @@ export class HelpingAI {
       }
 
       // Handle built-in tools
-      if (toolName === 'code_interpreter' || toolName === 'web_search') {
-        return await this.executeBuiltinTool(toolName, args);
+      if (isBuiltinTool(toolName)) {
+        return await executeBuiltinTool(toolName, args);
       }
 
       throw new ToolExecutionError(`Tool '${toolName}' not found`, toolName);
@@ -101,10 +101,10 @@ export class HelpingAI {
   ): Promise<ChatCompletionResponse | AsyncIterable<ChatCompletionChunk>> {
     // Process tools if provided
     const processedTools = await this.processTools(request.tools);
-    
+
     const requestBody = {
       ...request,
-      ...(processedTools && { tools: processedTools })
+      ...(processedTools && { tools: processedTools }),
     };
 
     if (request.stream) {
@@ -149,10 +149,12 @@ export class HelpingAI {
   /**
    * Create non-streaming completion
    */
-  private async createNonStreamingCompletion(request: ChatCompletionRequest): Promise<ChatCompletionResponse> {
+  private async createNonStreamingCompletion(
+    request: ChatCompletionRequest
+  ): Promise<ChatCompletionResponse> {
     const response = await this.makeRequest('/chat/completions', {
       method: 'POST',
-      body: JSON.stringify(request)
+      body: JSON.stringify(request),
     });
 
     return response as ChatCompletionResponse;
@@ -161,7 +163,9 @@ export class HelpingAI {
   /**
    * Create streaming completion
    */
-  private async createStreamingCompletion(_request: ChatCompletionRequest): Promise<AsyncIterable<ChatCompletionChunk>> {
+  private async createStreamingCompletion(
+    _request: ChatCompletionRequest
+  ): Promise<AsyncIterable<ChatCompletionChunk>> {
     const url = `${this.config.baseURL}/chat/completions`;
     const headers = this.getHeaders();
 
@@ -169,8 +173,8 @@ export class HelpingAI {
       const eventSource = new EventSource(url, {
         headers: {
           ...headers,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
       const chunks: ChatCompletionChunk[] = [];
@@ -216,24 +220,11 @@ export class HelpingAI {
   /**
    * Create async iterable from chunks
    */
-  private async* createAsyncIterable(chunks: ChatCompletionChunk[]): AsyncIterable<ChatCompletionChunk> {
+  private async *createAsyncIterable(
+    chunks: ChatCompletionChunk[]
+  ): AsyncIterable<ChatCompletionChunk> {
     for (const chunk of chunks) {
       yield chunk;
-    }
-  }
-
-  /**
-   * Execute built-in tool
-   */
-  private async executeBuiltinTool(toolName: string, args: Record<string, any>): Promise<any> {
-    // Mock implementation for built-in tools
-    switch (toolName) {
-      case 'code_interpreter':
-        return `Code execution result for: ${JSON.stringify(args)}`;
-      case 'web_search':
-        return `Web search results for: ${JSON.stringify(args)}`;
-      default:
-        throw new ToolExecutionError(`Unknown built-in tool: ${toolName}`, toolName);
     }
   }
 
@@ -268,30 +259,34 @@ export class HelpingAI {
         ...options,
         headers: {
           ...headers,
-          ...options.headers
+          ...options.headers,
         },
-        signal: controller.signal
+        signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw parseErrorResponse(response.status, errorData, Object.fromEntries(response.headers.entries()));
+        throw parseErrorResponse(
+          response.status,
+          errorData,
+          Object.fromEntries(response.headers.entries())
+        );
       }
 
       return await response.json();
     } catch (error) {
       clearTimeout(timeoutId);
-      
+
       if (error instanceof Error && error.name === 'AbortError') {
         throw new TimeoutError('Request timeout');
       }
-      
+
       if (error instanceof TypeError && error.message.includes('fetch')) {
         throw new NetworkError('Network error');
       }
-      
+
       throw error;
     }
   }
@@ -303,7 +298,7 @@ export class HelpingAI {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'User-Agent': 'HelpingAI-JS/1.0.0',
-      ...this.config.defaultHeaders
+      ...this.config.defaultHeaders,
     };
 
     if (this.config.apiKey) {

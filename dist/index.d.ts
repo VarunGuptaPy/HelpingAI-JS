@@ -20,8 +20,8 @@
 export { HelpingAI } from './client';
 export * from './types';
 export * from './errors';
-export { tools, getTools, getRegistry, clearRegistry } from './tools';
-export { MCPClient, MCPManager } from './mcp';
+export { tools, getTools, getRegistry, clearRegistry, executeTool } from './tools';
+export { executeBuiltinTool, isBuiltinTool, getBuiltinToolClass, getAvailableBuiltinTools, createBuiltinTool, getBuiltinToolDefinition, CodeInterpreterTool, WebSearchTool, BUILTIN_TOOLS_REGISTRY, } from './tools/builtin';
 export { HelpingAI as HAI } from './client';
 export declare const VERSION = "1.0.0";
 //# sourceMappingURL=index.d.ts.map

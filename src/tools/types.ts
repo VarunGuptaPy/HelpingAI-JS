@@ -28,3 +28,10 @@ export interface BuiltinToolConfig {
 }
 
 export type BuiltinToolName = 'code_interpreter' | 'web_search';
+
+export interface BuiltinToolExecutionResult {
+  success: boolean;
+  result: string;
+  error?: string;
+  metadata?: Record<string, any>;
+}

@@ -4,6 +4,7 @@
 import { parseErrorResponse, TimeoutError, NetworkError, ToolExecutionError } from './errors';
 import { MCPManager } from './mcp/manager';
 import { executeTool, getRegistry } from './tools/core';
+import { executeBuiltinTool, isBuiltinTool } from './tools/builtin';
 export class HelpingAI {
     constructor(config = {}) {
         /**
@@ -13,8 +14,8 @@ export class HelpingAI {
             completions: {
                 create: async (request) => {
                     return this.createChatCompletion(request);
-                }
-            }
+                },
+            },
         };
         /**
          * Models API
@@ -25,14 +26,14 @@ export class HelpingAI {
             },
             retrieve: async (modelId) => {
                 return this.retrieveModel(modelId);
-            }
+            },
         };
         this.config = {
             apiKey: config.apiKey || '',
             baseURL: config.baseURL || 'https://api.helpingai.co/v1',
             timeout: config.timeout || 30000,
             organization: config.organization || '',
-            defaultHeaders: config.defaultHeaders || {}
+            defaultHeaders: config.defaultHeaders || {},
         };
         if (!this.config.apiKey) {
             console.warn('HelpingAI API key not provided. Set HAI_API_KEY environment variable or pass apiKey in config.');
@@ -52,8 +53,8 @@ export class HelpingAI {
                 return await executeTool(toolName, args);
             }
             // Handle built-in tools
-            if (toolName === 'code_interpreter' || toolName === 'web_search') {
-                return await this.executeBuiltinTool(toolName, args);
+            if (isBuiltinTool(toolName)) {
+                return await executeBuiltinTool(toolName, args);
             }
             throw new ToolExecutionError(`Tool '${toolName}' not found`, toolName);
         }
@@ -69,7 +70,7 @@ export class HelpingAI {
         const processedTools = await this.processTools(request.tools);
         const requestBody = {
             ...request,
-            ...(processedTools && { tools: processedTools })
+            ...(processedTools && { tools: processedTools }),
         };
         if (request.stream) {
             return this.createStreamingCompletion(requestBody);
@@ -115,7 +116,7 @@ export class HelpingAI {
     async createNonStreamingCompletion(request) {
         const response = await this.makeRequest('/chat/completions', {
             method: 'POST',
-            body: JSON.stringify(request)
+            body: JSON.stringify(request),
         });
         return response;
     }
@@ -129,8 +130,8 @@ export class HelpingAI {
             const eventSource = new EventSource(url, {
                 headers: {
                     ...headers,
-                    'Content-Type': 'application/json'
-                }
+                    'Content-Type': 'application/json',
+                },
             });
             const chunks = [];
             let resolved = false;
@@ -177,20 +178,6 @@ export class HelpingAI {
         }
     }
     /**
-     * Execute built-in tool
-     */
-    async executeBuiltinTool(toolName, args) {
-        // Mock implementation for built-in tools
-        switch (toolName) {
-            case 'code_interpreter':
-                return `Code execution result for: ${JSON.stringify(args)}`;
-            case 'web_search':
-                return `Web search results for: ${JSON.stringify(args)}`;
-            default:
-                throw new ToolExecutionError(`Unknown built-in tool: ${toolName}`, toolName);
-        }
-    }
-    /**
      * List available models
      */
     async listModels() {
@@ -217,9 +204,9 @@ export class HelpingAI {
                 ...options,
                 headers: {
                     ...headers,
-                    ...options.headers
+                    ...options.headers,
                 },
-                signal: controller.signal
+                signal: controller.signal,
             });
             clearTimeout(timeoutId);
             if (!response.ok) {
@@ -246,7 +233,7 @@ export class HelpingAI {
         const headers = {
             'Content-Type': 'application/json',
             'User-Agent': 'HelpingAI-JS/1.0.0',
-            ...this.config.defaultHeaders
+            ...this.config.defaultHeaders,
         };
         if (this.config.apiKey) {
             headers['Authorization'] = `Bearer ${this.config.apiKey}`;

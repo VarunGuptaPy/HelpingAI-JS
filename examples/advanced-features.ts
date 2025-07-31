@@ -1,6 +1,6 @@
 /**
  * Advanced Features Examples for HelpingAI JavaScript SDK
- * 
+ *
  * This example demonstrates advanced features and patterns:
  * - Built-in tools usage
  * - Custom tool creation
@@ -17,38 +17,48 @@ import { HelpingAI, tools, getTools, getRegistry, clearRegistry } from '../src';
  */
 async function builtinToolsExample(): Promise<void> {
   console.log('=== Example 1: Built-in Tools ===');
-  
+
   const client = new HelpingAI({
-    apiKey: 'your-api-key'
+    apiKey: 'your-api-key',
   });
 
   try {
-    // Using code interpreter
-    const codeResponse = await client.chat.completions.create({
-      model: 'Dhanishtha-2.0-preview',
-      messages: [
-        { role: 'user', content: 'Calculate the factorial of 10 and show the code' }
-      ],
-      tools: ['code_interpreter']
+    // Direct tool calls - Code Interpreter
+    console.log('=== Testing Code Interpreter ===');
+    const codeResult = await client.call('code_interpreter', {
+      code: `
+import math
+
+def factorial(n):
+    if n <= 1:
+        return 1
+    return n * factorial(n - 1)
+
+# Calculate factorial of 10
+result = factorial(10)
+print(f"Factorial of 10 is: {result}")
+
+# Also show using math.factorial
+math_result = math.factorial(10)
+print(f"Using math.factorial: {math_result}")
+
+# Verify they're the same
+print(f"Results match: {result == math_result}")
+`,
     });
+    console.log('Code Interpreter Result:');
+    console.log(codeResult);
+    console.log();
 
-    if ('choices' in codeResponse) {
-      console.log('Code Interpreter Response:', codeResponse.choices[0].message.content);
-    }
-
-    // Using web search
-    const searchResponse = await client.chat.completions.create({
-      model: 'Dhanishtha-2.0-preview',
-      messages: [
-        { role: 'user', content: 'Search for the latest developments in emotional AI' }
-      ],
-      tools: ['web_search']
+    // Direct tool calls - Web Search
+    console.log('=== Testing Web Search ===');
+    const searchResult = await client.call('web_search', {
+      query: 'latest developments in emotional AI 2024',
+      max_results: 3,
     });
-
-    if ('choices' in searchResponse) {
-      console.log('Web Search Response:', searchResponse.choices[0].message.content);
-    }
-
+    console.log('Web Search Result:');
+    console.log(searchResult);
+    console.log();
   } catch (error: any) {
     console.error('Error:', error.message || error);
   } finally {
@@ -61,10 +71,13 @@ async function builtinToolsExample(): Promise<void> {
  */
 
 // Define custom tools using the @tools decorator
-const weatherTool = tools(function getWeather(city: string, units: 'celsius' | 'fahrenheit' = 'celsius'): string {
+const weatherTool = tools(function getWeather(
+  city: string,
+  units: 'celsius' | 'fahrenheit' = 'celsius'
+): string {
   /**
    * Get current weather information for a city.
-   * 
+   *
    * @param city - The city name to get weather for
    * @param units - Temperature units (celsius or fahrenheit)
    */
@@ -73,10 +86,13 @@ const weatherTool = tools(function getWeather(city: string, units: 'celsius' | '
   return `Weather in ${city}: ${temp}, partly cloudy with light winds`;
 });
 
-const calculatorTool = tools(function calculate(expression: string): { result: number; expression: string } {
+const calculatorTool = tools(function calculate(expression: string): {
+  result: number;
+  expression: string;
+} {
   /**
    * Perform mathematical calculations safely.
-   * 
+   *
    * @param expression - Mathematical expression to evaluate
    */
   try {
@@ -89,14 +105,14 @@ const calculatorTool = tools(function calculate(expression: string): { result: n
 });
 
 const taskManagerTool = tools(function createTask(
-  title: string, 
+  title: string,
   priority: 'low' | 'medium' | 'high' = 'medium',
   dueDate?: string,
   tags: string[] = []
 ): { id: string; title: string; priority: string; dueDate?: string; tags: string[] } {
   /**
    * Create a new task with specified details.
-   * 
+   *
    * @param title - Task title
    * @param priority - Task priority level
    * @param dueDate - Due date in YYYY-MM-DD format
@@ -108,9 +124,9 @@ const taskManagerTool = tools(function createTask(
 
 async function customToolsExample(): Promise<void> {
   console.log('\n=== Example 2: Custom Tools ===');
-  
+
   const client = new HelpingAI({
-    apiKey: 'your-api-key'
+    apiKey: 'your-api-key',
   });
 
   try {
@@ -121,19 +137,19 @@ async function customToolsExample(): Promise<void> {
     const response = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
       messages: [
-        { 
-          role: 'user', 
-          content: 'What\'s the weather in Paris, calculate 15 * 23, and create a high-priority task for reviewing the weather data?' 
-        }
+        {
+          role: 'user',
+          content:
+            "What's the weather in Paris, calculate 15 * 23, and create a high-priority task for reviewing the weather data?",
+        },
       ],
       tools: customTools,
-      tool_choice: 'auto'
+      tool_choice: 'auto',
     });
 
     if ('choices' in response) {
       console.log('Custom Tools Response:', response.choices[0].message.content);
     }
-
   } catch (error: any) {
     console.error('Error:', error.message || error);
   } finally {
@@ -146,33 +162,32 @@ async function customToolsExample(): Promise<void> {
  */
 async function directToolExecutionExample(): Promise<void> {
   console.log('\n=== Example 3: Direct Tool Execution ===');
-  
+
   const client = new HelpingAI({
-    apiKey: 'your-api-key'
+    apiKey: 'your-api-key',
   });
 
   try {
     // Execute tools directly without going through chat completion
     console.log('Executing tools directly:');
 
-    const weatherResult = await client.call('getWeather', { 
-      city: 'Tokyo', 
-      units: 'celsius' 
+    const weatherResult = await client.call('getWeather', {
+      city: 'Tokyo',
+      units: 'celsius',
     });
     console.log('Weather result:', weatherResult);
 
-    const calcResult = await client.call('calculate', { 
-      expression: '(15 + 25) * 2' 
+    const calcResult = await client.call('calculate', {
+      expression: '(15 + 25) * 2',
     });
     console.log('Calculation result:', calcResult);
 
     const taskResult = await client.call('createTask', {
       title: 'Review weather API integration',
       priority: 'high',
-      tags: ['api', 'weather', 'integration']
+      tags: ['api', 'weather', 'integration'],
     });
     console.log('Task created:', taskResult);
-
   } catch (error: any) {
     console.error('Error:', error.message || error);
   } finally {
@@ -185,19 +200,19 @@ async function directToolExecutionExample(): Promise<void> {
  */
 async function toolRegistryExample(): Promise<void> {
   console.log('\n=== Example 4: Tool Registry Management ===');
-  
+
   const registry = getRegistry();
-  
+
   console.log('Registry operations:');
   console.log(`- Total tools: ${registry.size()}`);
   console.log(`- Tool names: ${registry.listToolNames().join(', ')}`);
-  
+
   // Inspect specific tools
   const weatherTool = registry.get('getWeather');
   if (weatherTool) {
     console.log('Weather tool schema:', JSON.stringify(weatherTool.tool, null, 2));
   }
-  
+
   // List all tools with details
   const allTools = registry.list();
   allTools.forEach(({ name, tool }) => {
@@ -212,9 +227,9 @@ async function toolRegistryExample(): Promise<void> {
  */
 async function complexWorkflowExample(): Promise<void> {
   console.log('\n=== Example 5: Complex Workflow ===');
-  
+
   const client = new HelpingAI({
-    apiKey: 'your-api-key'
+    apiKey: 'your-api-key',
   });
 
   // Define a workflow tool
@@ -224,7 +239,7 @@ async function complexWorkflowExample(): Promise<void> {
   ): { analysis: string; insights: string[]; recommendations: string[] } {
     /**
      * Analyze a dataset and provide insights.
-     * 
+     *
      * @param dataset - Name or description of the dataset
      * @param analysisType - Type of analysis to perform
      */
@@ -233,41 +248,43 @@ async function complexWorkflowExample(): Promise<void> {
       insights: [
         'Data shows consistent growth pattern',
         'Seasonal variations detected',
-        'Strong correlation with external factors'
+        'Strong correlation with external factors',
       ],
       recommendations: [
         'Increase data collection frequency',
         'Implement predictive modeling',
-        'Set up automated alerts'
-      ]
+        'Set up automated alerts',
+      ],
     };
   });
 
   try {
     // Complex multi-step workflow
     const messages = [
-      { 
-        role: 'user' as const, 
-        content: 'I need to analyze customer satisfaction data, get weather info for our main office in London, calculate the ROI of our recent campaign (invested $10000, gained $15000), and create a task to review the analysis results.' 
-      }
+      {
+        role: 'user' as const,
+        content:
+          'I need to analyze customer satisfaction data, get weather info for our main office in London, calculate the ROI of our recent campaign (invested $10000, gained $15000), and create a task to review the analysis results.',
+      },
     ];
 
     const response = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
       messages,
       tools: getTools(), // Get all registered tools
-      tool_choice: 'auto'
+      tool_choice: 'auto',
     });
 
     if ('choices' in response) {
       console.log('Workflow Response:', response.choices[0].message.content);
-      
+
       // If tools were called, show the results
       if (response.choices[0].message.tool_calls) {
-        console.log(`\n🔧 ${response.choices[0].message.tool_calls.length} tools were called during the workflow`);
+        console.log(
+          `\n🔧 ${response.choices[0].message.tool_calls.length} tools were called during the workflow`
+        );
       }
     }
-
   } catch (error: any) {
     console.error('Error:', error.message || error);
   } finally {
@@ -280,7 +297,7 @@ async function complexWorkflowExample(): Promise<void> {
  */
 async function typeSafeToolsExample(): Promise<void> {
   console.log('\n=== Example 6: Type-Safe Tools ===');
-  
+
   // Define strongly typed tools
   interface UserProfile {
     id: string;
@@ -300,7 +317,7 @@ async function typeSafeToolsExample(): Promise<void> {
   ): UserProfile {
     /**
      * Create a new user profile with type safety.
-     * 
+     *
      * @param name - User's full name
      * @param email - User's email address
      * @param theme - UI theme preference
@@ -310,12 +327,12 @@ async function typeSafeToolsExample(): Promise<void> {
       id: Math.random().toString(36).substr(2, 9),
       name,
       email,
-      preferences: { theme, notifications }
+      preferences: { theme, notifications },
     };
   });
 
   const client = new HelpingAI({
-    apiKey: 'your-api-key'
+    apiKey: 'your-api-key',
   });
 
   try {
@@ -324,12 +341,11 @@ async function typeSafeToolsExample(): Promise<void> {
       name: 'John Doe',
       email: 'john@example.com',
       theme: 'dark',
-      notifications: false
+      notifications: false,
     });
 
     console.log('Created user:', user);
     console.log('Type safety ensures correct parameter types and return values');
-
   } catch (error: any) {
     console.error('Error:', error.message || error);
   } finally {
@@ -342,10 +358,10 @@ async function typeSafeToolsExample(): Promise<void> {
  */
 async function performanceOptimizationExample(): Promise<void> {
   console.log('\n=== Example 7: Performance Optimization ===');
-  
+
   const client = new HelpingAI({
     apiKey: 'your-api-key',
-    timeout: 10000 // Shorter timeout for performance testing
+    timeout: 10000, // Shorter timeout for performance testing
   });
 
   try {
@@ -354,25 +370,26 @@ async function performanceOptimizationExample(): Promise<void> {
     // 1. Batch operations
     console.log('1. Batching multiple operations...');
     const batchStart = Date.now();
-    
+
     const batchResponse = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
       messages: [
-        { 
-          role: 'user', 
-          content: 'Perform these tasks: get weather for NYC, calculate 100*50, create a task called "Review batch results"' 
-        }
+        {
+          role: 'user',
+          content:
+            'Perform these tasks: get weather for NYC, calculate 100*50, create a task called "Review batch results"',
+        },
       ],
-      tools: getTools()
+      tools: getTools(),
     });
-    
+
     const batchTime = Date.now() - batchStart;
     console.log(`   Batch completed in ${batchTime}ms`);
 
     // 2. Tool result caching (mock implementation)
     console.log('2. Tool result caching...');
     const cache = new Map<string, any>();
-    
+
     const cacheKey = 'weather_nyc_celsius';
     if (cache.has(cacheKey)) {
       console.log('   Cache hit - using cached result');
@@ -392,10 +409,10 @@ async function performanceOptimizationExample(): Promise<void> {
     const streamResponse = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
       messages: [
-        { role: 'user', content: 'Explain the performance benefits of streaming responses' }
+        { role: 'user', content: 'Explain the performance benefits of streaming responses' },
       ],
       stream: true,
-      max_tokens: 100
+      max_tokens: 100,
     });
 
     if (Symbol.asyncIterator in streamResponse) {
@@ -408,7 +425,6 @@ async function performanceOptimizationExample(): Promise<void> {
       }
       console.log('   Streaming response received');
     }
-
   } catch (error: any) {
     console.error('Error:', error.message || error);
   } finally {
@@ -421,12 +437,15 @@ async function performanceOptimizationExample(): Promise<void> {
  */
 async function errorHandlingExample(): Promise<void> {
   console.log('\n=== Example 8: Advanced Error Handling ===');
-  
+
   // Define a tool that might fail
-  const unreliableTool = tools(function processData(data: string, shouldFail: boolean = false): string {
+  const unreliableTool = tools(function processData(
+    data: string,
+    shouldFail: boolean = false
+  ): string {
     /**
      * Process data with potential failure for testing error handling.
-     * 
+     *
      * @param data - Data to process
      * @param shouldFail - Whether to simulate failure
      */
@@ -437,7 +456,7 @@ async function errorHandlingExample(): Promise<void> {
   });
 
   const client = new HelpingAI({
-    apiKey: 'your-api-key'
+    apiKey: 'your-api-key',
   });
 
   try {
@@ -460,13 +479,13 @@ async function errorHandlingExample(): Promise<void> {
     // 3. Network timeout handling
     const timeoutClient = new HelpingAI({
       apiKey: 'your-api-key',
-      timeout: 1 // Very short timeout to trigger error
+      timeout: 1, // Very short timeout to trigger error
     });
 
     try {
       await timeoutClient.chat.completions.create({
         model: 'Dhanishtha-2.0-preview',
-        messages: [{ role: 'user', content: 'This should timeout' }]
+        messages: [{ role: 'user', content: 'This should timeout' }],
       });
     } catch (error: any) {
       console.log('✅ Caught timeout error:', error.message);
@@ -479,16 +498,15 @@ async function errorHandlingExample(): Promise<void> {
     const response = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
       messages: [
-        { role: 'user', content: 'Try to process some data, but continue even if it fails' }
+        { role: 'user', content: 'Try to process some data, but continue even if it fails' },
       ],
       tools: getTools(),
-      tool_choice: 'auto'
+      tool_choice: 'auto',
     });
 
     if ('choices' in response) {
       console.log('✅ Response received despite potential tool failures');
     }
-
   } catch (error: any) {
     console.error('Error:', error.message || error);
   } finally {
@@ -520,7 +538,6 @@ async function main(): Promise<void> {
     console.log('- Implement type safety for reliability');
     console.log('- Optimize performance with batching and caching');
     console.log('- Handle errors gracefully for resilience');
-
   } catch (error: any) {
     console.error('❌ Example execution failed:', error.message || error);
     if (typeof (globalThis as any).process !== 'undefined' && (globalThis as any).process.exit) {
@@ -535,9 +552,11 @@ async function main(): Promise<void> {
 }
 
 // Run examples if this file is executed directly (Node.js environment)
-if (typeof (globalThis as any).require !== 'undefined' &&
-    typeof (globalThis as any).module !== 'undefined' &&
-    (globalThis as any).require.main === (globalThis as any).module) {
+if (
+  typeof (globalThis as any).require !== 'undefined' &&
+  typeof (globalThis as any).module !== 'undefined' &&
+  (globalThis as any).require.main === (globalThis as any).module
+) {
   main().catch(console.error);
 }
 
@@ -549,5 +568,5 @@ export {
   complexWorkflowExample,
   typeSafeToolsExample,
   performanceOptimizationExample,
-  errorHandlingExample
+  errorHandlingExample,
 };
