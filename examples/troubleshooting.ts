@@ -18,7 +18,7 @@ import { HelpingAI } from '../src';
  * Example: Using built-in tools correctly.
  */
 async function exampleBuiltInTools(): Promise<void> {
-  console.log('=== Example 1: Built-in Tools ===');
+  console.log('=== mExample 1: Built-in Tools ===');
   
   const client = new HelpingAI({
     apiKey: "your-api-key" // Replace with your actual API key or use environment variable

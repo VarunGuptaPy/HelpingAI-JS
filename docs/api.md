@@ -25,15 +25,17 @@ new HelpingAI(options?: HelpingAIOptions)
 ```
 
 **Parameters:**
+
 - `options` (optional): Configuration options for the client
 
 **Example:**
+
 ```typescript
 const client = new HelpingAI({
   apiKey: 'your-api-key',
   baseURL: 'https://api.helpingai.com/v1',
   timeout: 30000,
-  maxRetries: 3
+  maxRetries: 3,
 });
 ```
 
@@ -68,21 +70,22 @@ async create(request: ChatCompletionRequest): Promise<ChatCompletionResponse | A
 ```
 
 **Parameters:**
+
 - `request`: Chat completion request configuration
 
 **Returns:**
+
 - `Promise<ChatCompletionResponse>` for non-streaming requests
 - `Promise<AsyncIterable<ChatCompletionChunk>>` for streaming requests
 
 **Example:**
+
 ```typescript
 const response = await client.chat.completions.create({
   model: 'Dhanishtha-2.0-preview',
-  messages: [
-    { role: 'user', content: 'Hello!' }
-  ],
+  messages: [{ role: 'user', content: 'Hello!' }],
   max_tokens: 100,
-  temperature: 0.7
+  temperature: 0.7,
 });
 ```
 
@@ -95,17 +98,20 @@ async call<T = any>(toolName: string, parameters: Record<string, any>): Promise<
 ```
 
 **Parameters:**
+
 - `toolName`: Name of the tool to execute
 - `parameters`: Parameters to pass to the tool
 
 **Returns:**
+
 - `Promise<T>`: Result of the tool execution
 
 **Example:**
+
 ```typescript
-const result = await client.call('getWeather', { 
-  city: 'Paris', 
-  units: 'celsius' 
+const result = await client.call('getWeather', {
+  city: 'Paris',
+  units: 'celsius',
 });
 ```
 
@@ -118,6 +124,7 @@ async cleanup(): Promise<void>
 ```
 
 **Example:**
+
 ```typescript
 await client.cleanup();
 ```
@@ -139,6 +146,7 @@ interface HelpingAIOptions {
 ```
 
 **Properties:**
+
 - `apiKey` (optional): API key for authentication. If not provided, will attempt to read from `HELPINGAI_API_KEY` environment variable
 - `baseURL` (optional): Base URL for API requests. Default: `'https://api.helpingai.com/v1'`
 - `timeout` (optional): Request timeout in milliseconds. Default: `30000`
@@ -168,6 +176,7 @@ interface ChatCompletionRequest {
 ```
 
 **Properties:**
+
 - `model`: Model identifier (e.g., 'Dhanishtha-2.0-preview')
 - `messages`: Array of conversation messages
 - `max_tokens` (optional): Maximum tokens to generate
@@ -197,6 +206,7 @@ interface ChatMessage {
 ```
 
 **Properties:**
+
 - `role`: Message role
 - `content`: Message content
 - `name` (optional): Name of the message sender (for tool messages)
@@ -219,6 +229,7 @@ interface ChatCompletionResponse {
 ```
 
 **Properties:**
+
 - `id`: Unique identifier for the completion
 - `object`: Object type identifier
 - `created`: Unix timestamp of creation
@@ -239,6 +250,7 @@ interface ChatCompletionChoice {
 ```
 
 **Properties:**
+
 - `index`: Choice index
 - `message`: The generated message
 - `finish_reason`: Reason the generation stopped
@@ -258,6 +270,7 @@ interface ChatCompletionChunk {
 ```
 
 **Properties:**
+
 - `id`: Unique identifier for the completion
 - `object`: Object type identifier
 - `created`: Unix timestamp of creation
@@ -277,6 +290,7 @@ interface ChatCompletionChunkChoice {
 ```
 
 **Properties:**
+
 - `index`: Choice index
 - `delta`: Incremental message content
 - `finish_reason`: Reason the generation stopped (null if continuing)
@@ -294,6 +308,7 @@ interface ChatMessageDelta {
 ```
 
 **Properties:**
+
 - `role` (optional): Message role (only in first chunk)
 - `content` (optional): Incremental content
 - `tool_calls` (optional): Incremental tool calls
@@ -311,6 +326,7 @@ interface Usage {
 ```
 
 **Properties:**
+
 - `prompt_tokens`: Tokens in the prompt
 - `completion_tokens`: Tokens in the completion
 - `total_tokens`: Total tokens used
@@ -329,6 +345,7 @@ interface Tool {
 ```
 
 **Properties:**
+
 - `type`: Tool type (always 'function')
 - `function`: Function definition
 
@@ -345,6 +362,7 @@ interface ToolFunction {
 ```
 
 **Properties:**
+
 - `name`: Function name
 - `description`: Function description
 - `parameters`: JSON Schema for parameters
@@ -362,6 +380,7 @@ interface ToolCall {
 ```
 
 **Properties:**
+
 - `id`: Unique identifier for the tool call
 - `type`: Tool call type (always 'function')
 - `function`: Function call details
@@ -378,6 +397,7 @@ interface ToolCallFunction {
 ```
 
 **Properties:**
+
 - `name`: Function name
 - `arguments`: JSON string of function arguments
 
@@ -386,18 +406,24 @@ interface ToolCallFunction {
 Create a tool from a function.
 
 ```typescript
-function tools<T extends (...args: any[]) => any>(fn: T): Tool
+function tools<T extends (...args: any[]) => any>(fn: T): Tool;
 ```
 
 **Parameters:**
+
 - `fn`: Function to convert to a tool
 
 **Returns:**
+
 - `Tool`: Tool definition
 
 **Example:**
+
 ```typescript
-const weatherTool = tools(function getWeather(city: string, units: 'celsius' | 'fahrenheit' = 'celsius'): string {
+const weatherTool = tools(function getWeather(
+  city: string,
+  units: 'celsius' | 'fahrenheit' = 'celsius'
+): string {
   /**
    * Get weather information for a city
    * @param city - The city name
@@ -422,6 +448,7 @@ register(name: string, tool: Tool, implementation: Function): void
 ```
 
 **Parameters:**
+
 - `name`: Tool name
 - `tool`: Tool definition
 - `implementation`: Tool implementation function
@@ -435,9 +462,11 @@ get(name: string): RegisteredTool | undefined
 ```
 
 **Parameters:**
+
 - `name`: Tool name
 
 **Returns:**
+
 - `RegisteredTool | undefined`: Registered tool or undefined if not found
 
 ##### `list()`
@@ -449,6 +478,7 @@ list(): RegisteredTool[]
 ```
 
 **Returns:**
+
 - `RegisteredTool[]`: Array of all registered tools
 
 ##### `listToolNames()`
@@ -460,6 +490,7 @@ listToolNames(): string[]
 ```
 
 **Returns:**
+
 - `string[]`: Array of tool names
 
 ##### `size()`
@@ -471,6 +502,7 @@ size(): number
 ```
 
 **Returns:**
+
 - `number`: Number of registered tools
 
 ##### `clear()`
@@ -488,10 +520,11 @@ clear(): void
 Get the global tool registry.
 
 ```typescript
-function getRegistry(): ToolRegistry
+function getRegistry(): ToolRegistry;
 ```
 
 **Returns:**
+
 - `ToolRegistry`: The global tool registry
 
 #### `getTools()`
@@ -499,13 +532,15 @@ function getRegistry(): ToolRegistry
 Get tools by name or get all tools.
 
 ```typescript
-function getTools(names?: string[]): Tool[]
+function getTools(names?: string[]): Tool[];
 ```
 
 **Parameters:**
+
 - `names` (optional): Array of tool names to retrieve
 
 **Returns:**
+
 - `Tool[]`: Array of tools
 
 #### `clearRegistry()`
@@ -513,7 +548,7 @@ function getTools(names?: string[]): Tool[]
 Clear the global tool registry.
 
 ```typescript
-function clearRegistry(): void
+function clearRegistry(): void;
 ```
 
 ## MCP Integration
@@ -529,6 +564,7 @@ new MCPClient(options: MCPClientOptions)
 ```
 
 **Parameters:**
+
 - `options`: MCP client configuration
 
 #### Methods
@@ -558,6 +594,7 @@ async listTools(): Promise<Tool[]>
 ```
 
 **Returns:**
+
 - `Promise<Tool[]>`: Array of available tools
 
 ##### `callTool()`
@@ -569,10 +606,12 @@ async callTool(name: string, arguments: Record<string, any>): Promise<any>
 ```
 
 **Parameters:**
+
 - `name`: Tool name
 - `arguments`: Tool arguments
 
 **Returns:**
+
 - `Promise<any>`: Tool result
 
 ### MCPClientOptions
@@ -587,6 +626,7 @@ interface MCPClientOptions {
 ```
 
 **Properties:**
+
 - `transport`: Transport configuration
 - `timeout` (optional): Connection timeout in milliseconds
 
@@ -612,6 +652,7 @@ interface MCPStdioTransport {
 ```
 
 **Properties:**
+
 - `type`: Transport type ('stdio')
 - `command`: Command to execute
 - `args` (optional): Command arguments
@@ -630,6 +671,7 @@ interface MCPSSETransport {
 ```
 
 **Properties:**
+
 - `type`: Transport type ('sse')
 - `url`: SSE endpoint URL
 - `headers` (optional): HTTP headers
@@ -647,6 +689,7 @@ interface MCPWebSocketTransport {
 ```
 
 **Properties:**
+
 - `type`: Transport type ('websocket')
 - `url`: WebSocket URL
 - `protocols` (optional): WebSocket protocols
@@ -659,11 +702,12 @@ Base error class for all SDK errors.
 
 ```typescript
 class HelpingAIError extends Error {
-  constructor(message: string, cause?: Error)
+  constructor(message: string, cause?: Error);
 }
 ```
 
 **Properties:**
+
 - `message`: Error message
 - `cause` (optional): Underlying error cause
 
@@ -683,6 +727,7 @@ class APIError extends HelpingAIError {
 ```
 
 **Properties:**
+
 - `status`: HTTP status code
 - `code` (optional): API error code
 - `response` (optional): Full API response
@@ -693,7 +738,7 @@ Authentication-related error.
 
 ```typescript
 class AuthenticationError extends APIError {
-  constructor(message: string)
+  constructor(message: string);
 }
 ```
 
@@ -711,6 +756,7 @@ class RateLimitError extends APIError {
 ```
 
 **Properties:**
+
 - `retryAfter` (optional): Seconds to wait before retrying
 
 ### TimeoutError
@@ -719,7 +765,7 @@ Request timeout error.
 
 ```typescript
 class TimeoutError extends HelpingAIError {
-  constructor(message: string)
+  constructor(message: string);
 }
 ```
 
@@ -738,6 +784,7 @@ class ValidationError extends HelpingAIError {
 
 **
 Properties:**
+
 - `field` (optional): Field that failed validation
 
 ## Configuration Options
@@ -752,9 +799,9 @@ const defaultConfig = {
   timeout: 30000,
   maxRetries: 3,
   defaultHeaders: {
-    'User-Agent': 'helpingai-js/1.0.0',
-    'Content-Type': 'application/json'
-  }
+    'User-Agent': 'helpingai/1.0.0',
+    'Content-Type': 'application/json',
+  },
 };
 ```
 
@@ -778,8 +825,8 @@ const client = new HelpingAI({
   timeout: 60000,
   maxRetries: 5,
   defaultHeaders: {
-    'Custom-Header': 'value'
-  }
+    'Custom-Header': 'value',
+  },
 });
 ```
 
@@ -792,21 +839,24 @@ const client = new HelpingAI({
 Check if a response is a streaming response.
 
 ```typescript
-function isStreamingResponse(response: any): response is AsyncIterable<ChatCompletionChunk>
+function isStreamingResponse(response: any): response is AsyncIterable<ChatCompletionChunk>;
 ```
 
 **Parameters:**
+
 - `response`: Response to check
 
 **Returns:**
+
 - `boolean`: True if response is streaming
 
 **Example:**
+
 ```typescript
 const response = await client.chat.completions.create({
   model: 'Dhanishtha-2.0-preview',
   messages: [{ role: 'user', content: 'Hello' }],
-  stream: true
+  stream: true,
 });
 
 if (isStreamingResponse(response)) {
@@ -821,13 +871,15 @@ if (isStreamingResponse(response)) {
 Check if a message contains tool calls.
 
 ```typescript
-function isToolCall(message: ChatMessage): message is ChatMessage & { tool_calls: ToolCall[] }
+function isToolCall(message: ChatMessage): message is ChatMessage & { tool_calls: ToolCall[] };
 ```
 
 **Parameters:**
+
 - `message`: Message to check
 
 **Returns:**
+
 - `boolean`: True if message contains tool calls
 
 ### Helper Functions
@@ -837,20 +889,23 @@ function isToolCall(message: ChatMessage): message is ChatMessage & { tool_calls
 Extract content from a chat completion response.
 
 ```typescript
-function extractContent(response: ChatCompletionResponse): string
+function extractContent(response: ChatCompletionResponse): string;
 ```
 
 **Parameters:**
+
 - `response`: Chat completion response
 
 **Returns:**
+
 - `string`: Extracted content
 
 **Example:**
+
 ```typescript
 const response = await client.chat.completions.create({
   model: 'Dhanishtha-2.0-preview',
-  messages: [{ role: 'user', content: 'Hello' }]
+  messages: [{ role: 'user', content: 'Hello' }],
 });
 
 const content = extractContent(response);
@@ -862,21 +917,24 @@ console.log(content);
 Convert a streaming response to a complete string.
 
 ```typescript
-async function streamToString(stream: AsyncIterable<ChatCompletionChunk>): Promise<string>
+async function streamToString(stream: AsyncIterable<ChatCompletionChunk>): Promise<string>;
 ```
 
 **Parameters:**
+
 - `stream`: Streaming response
 
 **Returns:**
+
 - `Promise<string>`: Complete response content
 
 **Example:**
+
 ```typescript
 const stream = await client.chat.completions.create({
   model: 'Dhanishtha-2.0-preview',
   messages: [{ role: 'user', content: 'Tell me a story' }],
-  stream: true
+  stream: true,
 });
 
 const fullContent = await streamToString(stream);
@@ -888,13 +946,15 @@ console.log(fullContent);
 Validate an API key format.
 
 ```typescript
-function validateApiKey(apiKey: string): boolean
+function validateApiKey(apiKey: string): boolean;
 ```
 
 **Parameters:**
+
 - `apiKey`: API key to validate
 
 **Returns:**
+
 - `boolean`: True if API key format is valid
 
 #### `formatError()`
@@ -902,13 +962,15 @@ function validateApiKey(apiKey: string): boolean
 Format an error for display.
 
 ```typescript
-function formatError(error: Error): string
+function formatError(error: Error): string;
 ```
 
 **Parameters:**
+
 - `error`: Error to format
 
 **Returns:**
+
 - `string`: Formatted error message
 
 ## Advanced Usage
@@ -924,7 +986,7 @@ interface HTTPClient {
 
 const customClient = new HelpingAI({
   apiKey: 'your-api-key',
-  httpClient: myCustomHttpClient
+  httpClient: myCustomHttpClient,
 });
 ```
 
@@ -935,10 +997,10 @@ Add request interceptors for logging, authentication, etc.:
 ```typescript
 const client = new HelpingAI({
   apiKey: 'your-api-key',
-  requestInterceptor: (config) => {
+  requestInterceptor: config => {
     console.log('Making request:', config);
     return config;
-  }
+  },
 });
 ```
 
@@ -949,10 +1011,10 @@ Add response interceptors for processing responses:
 ```typescript
 const client = new HelpingAI({
   apiKey: 'your-api-key',
-  responseInterceptor: (response) => {
+  responseInterceptor: response => {
     console.log('Received response:', response);
     return response;
-  }
+  },
 });
 ```
 
@@ -965,12 +1027,11 @@ const client = new HelpingAI({
   apiKey: 'your-api-key',
   retryConfig: {
     maxRetries: 5,
-    retryDelay: (attempt) => Math.pow(2, attempt) * 1000,
-    retryCondition: (error) => {
-      return error instanceof RateLimitError || 
-             error instanceof TimeoutError;
-    }
-  }
+    retryDelay: attempt => Math.pow(2, attempt) * 1000,
+    retryCondition: error => {
+      return error instanceof RateLimitError || error instanceof TimeoutError;
+    },
+  },
 });
 ```
 
@@ -1013,14 +1074,14 @@ When using streaming, handle backpressure appropriately:
 const stream = await client.chat.completions.create({
   model: 'Dhanishtha-2.0-preview',
   messages: [{ role: 'user', content: 'Long response' }],
-  stream: true
+  stream: true,
 });
 
 const chunks: string[] = [];
 for await (const chunk of stream) {
   if (chunk.choices[0].delta.content) {
     chunks.push(chunk.choices[0].delta.content);
-    
+
     // Process chunks in batches to avoid memory issues
     if (chunks.length >= 100) {
       await processChunks(chunks);
@@ -1055,10 +1116,12 @@ When using in browsers, ensure your server has proper CORS headers:
 
 ```javascript
 // Server-side CORS configuration
-app.use(cors({
-  origin: 'https://your-domain.com',
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: 'https://your-domain.com',
+    credentials: true,
+  })
+);
 ```
 
 ### Security Considerations
@@ -1068,14 +1131,14 @@ Never expose API keys in client-side code:
 ```typescript
 // ❌ Bad - API key exposed in browser
 const client = new HelpingAI({
-  apiKey: 'sk-your-secret-key'
+  apiKey: 'sk-your-secret-key',
 });
 
 // ✅ Good - Use a proxy endpoint
 const response = await fetch('/api/chat', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ message: 'Hello' })
+  body: JSON.stringify({ message: 'Hello' }),
 });
 ```
 
@@ -1086,15 +1149,15 @@ const response = await fetch('/api/chat', {
 For testing, you can mock the HelpingAI client:
 
 ```typescript
-import { HelpingAI } from 'helpingai-js';
+import { HelpingAI } from 'helpingai';
 
 // Mock the client
-jest.mock('helpingai-js');
+jest.mock('helpingai');
 const mockClient = HelpingAI as jest.MockedClass<typeof HelpingAI>;
 
 // Setup mock responses
 mockClient.prototype.chat.completions.create.mockResolvedValue({
-  choices: [{ message: { content: 'Mocked response' } }]
+  choices: [{ message: { content: 'Mocked response' } }],
 });
 ```
 
@@ -1103,11 +1166,11 @@ mockClient.prototype.chat.completions.create.mockResolvedValue({
 The SDK provides test utilities:
 
 ```typescript
-import { createMockClient, createMockResponse } from 'helpingai-js/testing';
+import { createMockClient, createMockResponse } from 'helpingai/testing';
 
 const mockClient = createMockClient();
 const mockResponse = createMockResponse({
-  content: 'Test response'
+  content: 'Test response',
 });
 
 mockClient.chat.completions.create.mockResolvedValue(mockResponse);
@@ -1120,31 +1183,34 @@ mockClient.chat.completions.create.mockResolvedValue(mockResponse);
 Key changes in v1.x:
 
 1. **Constructor changes:**
+
    ```typescript
    // v0.x
    const client = new HelpingAI('api-key');
-   
+
    // v1.x
    const client = new HelpingAI({ apiKey: 'api-key' });
    ```
 
 2. **Tool system changes:**
+
    ```typescript
    // v0.x
    @tool
    function myTool() { ... }
-   
+
    // v1.x
    const myTool = tools(function myTool() { ... });
    ```
 
 3. **Error handling changes:**
+
    ```typescript
    // v0.x
    catch (error) {
      if (error.code === 'rate_limit') { ... }
    }
-   
+
    // v1.x
    catch (error) {
      if (error instanceof RateLimitError) { ... }
@@ -1156,7 +1222,7 @@ Key changes in v1.x:
 ### Complete Chat Application
 
 ```typescript
-import { HelpingAI, tools } from 'helpingai-js';
+import { HelpingAI, tools } from 'helpingai';
 
 // Define tools
 const weatherTool = tools(function getWeather(city: string): string {
@@ -1170,7 +1236,7 @@ const calculatorTool = tools(function calculate(expression: string): number {
 // Create client
 const client = new HelpingAI({
   apiKey: process.env.HELPINGAI_API_KEY,
-  timeout: 30000
+  timeout: 30000,
 });
 
 // Chat function
@@ -1180,12 +1246,12 @@ async function chat(message: string): Promise<string> {
       model: 'Dhanishtha-2.0-preview',
       messages: [
         { role: 'system', content: 'You are a helpful assistant.' },
-        { role: 'user', content: message }
+        { role: 'user', content: message },
       ],
       tools: [weatherTool, calculatorTool],
       tool_choice: 'auto',
       max_tokens: 1000,
-      temperature: 0.7
+      temperature: 0.7,
     });
 
     return response.choices[0].message.content;
@@ -1196,9 +1262,7 @@ async function chat(message: string): Promise<string> {
 }
 
 // Usage
-chat('What\'s the weather in Paris and what\'s 15 * 23?')
-  .then(console.log)
-  .catch(console.error);
+chat("What's the weather in Paris and what's 15 * 23?").then(console.log).catch(console.error);
 ```
 
 ### Streaming Chat with Progress
@@ -1209,7 +1273,7 @@ async function streamingChat(message: string): Promise<void> {
     model: 'Dhanishtha-2.0-preview',
     messages: [{ role: 'user', content: message }],
     stream: true,
-    max_tokens: 500
+    max_tokens: 500,
   });
 
   let content = '';
@@ -1217,17 +1281,17 @@ async function streamingChat(message: string): Promise<void> {
   const startTime = Date.now();
 
   console.log('🤖 Assistant: ');
-  
+
   for await (const chunk of stream) {
     if (chunk.choices[0].delta.content) {
       const deltaContent = chunk.choices[0].delta.content;
       content += deltaContent;
       tokenCount++;
-      
+
       // Stream to console
       process.stdout.write(deltaContent);
     }
-    
+
     if (chunk.choices[0].finish_reason) {
       const duration = Date.now() - startTime;
       console.log(`\n\n📊 Stats: ${tokenCount} tokens in ${duration}ms`);

@@ -1,5 +1,5 @@
 {
-  "name": "helpingai-js",
+  "name": "helpingai",
   "version": "1.0.0",
   "description": "The official JavaScript/TypeScript library for the HelpingAI API - Advanced AI with Emotional Intelligence",
   "main": "dist/index.js",

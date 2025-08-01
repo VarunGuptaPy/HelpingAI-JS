@@ -1,6 +1,6 @@
 # HelpingAI JavaScript SDK
 
-[![npm version](https://badge.fury.io/js/helpingai-js.svg)](https://badge.fury.io/js/helpingai-js)
+[![npm version](https://badge.fury.io/js/helpingai.svg)](https://badge.fury.io/js/helpingai)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -11,17 +11,17 @@ The official JavaScript/TypeScript SDK for HelpingAI - an advanced emotional AI 
 ### Installation
 
 ```bash
-npm install helpingai-js
+npm install helpingai
 # or
-yarn add helpingai-js
+yarn add helpingai
 # or
-pnpm add helpingai-js
+pnpm add helpingai
 ```
 
 ### Basic Usage
 
 ```typescript
-import { HelpingAI } from 'helpingai-js';
+import { HelpingAI } from 'helpingai';
 
 const client = new HelpingAI({
   apiKey: 'your-api-key-here',
@@ -79,16 +79,16 @@ main().catch(console.error);
 
 ```bash
 # npm
-npm install helpingai-js
+npm install helpingai
 
 # yarn
-yarn add helpingai-js
+yarn add helpingai
 
 # pnpm
-pnpm add helpingai-js
+pnpm add helpingai
 
 # bun
-bun add helpingai-js
+bun add helpingai
 ```
 
 ### CDN Usage (Browser)
@@ -96,11 +96,11 @@ bun add helpingai-js
 ```html
 <!-- ES Modules -->
 <script type="module">
-  import { HelpingAI } from 'https://cdn.skypack.dev/helpingai-js';
+  import { HelpingAI } from 'https://cdn.skypack.dev/helpingai';
 </script>
 
 <!-- UMD -->
-<script src="https://unpkg.com/helpingai-js/dist/helpingai.umd.js"></script>
+<script src="https://unpkg.com/helpingai/dist/helpingai.umd.js"></script>
 ```
 
 ## 🔐 Authentication
@@ -142,7 +142,7 @@ HELPINGAI_BASE_URL=https://api.helpingai.com/v1  # Optional
 ### Client Initialization
 
 ```typescript
-import { HelpingAI } from 'helpingai-js';
+import { HelpingAI } from 'helpingai';
 
 const client = new HelpingAI({
   apiKey: 'your-api-key',
@@ -190,7 +190,7 @@ for await (const chunk of stream) {
 ### Basic Chat
 
 ```typescript
-import { HelpingAI } from 'helpingai-js';
+import { HelpingAI } from 'helpingai';
 
 async function basicChat() {
   const client = new HelpingAI({ apiKey: 'your-api-key' });
@@ -207,7 +207,7 @@ async function basicChat() {
 ### Tool Calling
 
 ```typescript
-import { HelpingAI, tools } from 'helpingai-js';
+import { HelpingAI, tools } from 'helpingai';
 
 // Define a custom tool
 const weatherTool = tools(function getWeather(city: string): string {
@@ -312,7 +312,7 @@ interface ChatMessage {
 ### Creating Custom Tools
 
 ```typescript
-import { tools } from 'helpingai-js';
+import { tools } from 'helpingai';
 
 // Simple tool
 const calculator = tools(function add(a: number, b: number): number {
@@ -352,7 +352,7 @@ const userManager = tools(function createUser(
 ### Tool Registry Management
 
 ```typescript
-import { getRegistry, getTools, clearRegistry } from 'helpingai-js';
+import { getRegistry, getTools, clearRegistry } from 'helpingai';
 
 // Get the tool registry
 const registry = getRegistry();
@@ -376,7 +376,7 @@ HelpingAI provides powerful built-in tools inspired by Qwen-Agent:
 Execute Python code in a secure sandboxed environment with data science capabilities:
 
 ```typescript
-import { HelpingAI } from 'helpingai-js';
+import { HelpingAI } from 'helpingai';
 
 const client = new HelpingAI({ apiKey: 'your-api-key' });
 
@@ -439,7 +439,7 @@ Features:
 #### Using Built-in Tools
 
 ```typescript
-import { executeBuiltinTool, isBuiltinTool, getAvailableBuiltinTools } from 'helpingai-js';
+import { executeBuiltinTool, isBuiltinTool, getAvailableBuiltinTools } from 'helpingai';
 
 // Check available tools
 console.log('Available tools:', getAvailableBuiltinTools());
@@ -471,7 +471,7 @@ const response = await client.chat.completions.create({
 Model Context Protocol (MCP) allows integration with external services:
 
 ```typescript
-import { HelpingAI, MCPClient } from 'helpingai-js';
+import { HelpingAI, MCPClient } from 'helpingai';
 
 async function mcpExample() {
   const client = new HelpingAI({ apiKey: 'your-api-key' });
@@ -565,7 +565,7 @@ import {
   AuthenticationError,
   RateLimitError,
   TimeoutError,
-} from 'helpingai-js';
+} from 'helpingai';
 
 try {
   const response = await client.chat.completions.create({
@@ -646,7 +646,7 @@ async function robustChat(message: string) {
 ### Full Type Safety
 
 ```typescript
-import { HelpingAI, ChatCompletionResponse, Tool } from 'helpingai-js';
+import { HelpingAI, ChatCompletionResponse, Tool } from 'helpingai';
 
 // Strongly typed client
 const client: HelpingAI = new HelpingAI({ apiKey: 'your-api-key' });
@@ -687,13 +687,13 @@ interface CustomCompletionRequest extends ChatCompletionRequest {
 
 ### Key Differences
 
-| Python                             | JavaScript/TypeScript                      |
-| ---------------------------------- | ------------------------------------------ |
-| `from helpingai import HelpingAI`  | `import { HelpingAI } from 'helpingai-js'` |
-| `@tools` decorator                 | `tools()` function wrapper                 |
-| `client.chat.completions.create()` | Same API                                   |
-| Snake case (`max_tokens`)          | Same (maintains API compatibility)         |
-| `async for chunk in stream:`       | `for await (const chunk of stream)`        |
+| Python                             | JavaScript/TypeScript                   |
+| ---------------------------------- | --------------------------------------- |
+| `from helpingai import HelpingAI`  | `import { HelpingAI } from 'helpingai'` |
+| `@tools` decorator                 | `tools()` function wrapper              |
+| `client.chat.completions.create()` | Same API                                |
+| Snake case (`max_tokens`)          | Same (maintains API compatibility)      |
+| `async for chunk in stream:`       | `for await (const chunk of stream)`     |
 
 ### Python to JavaScript Examples
 
@@ -718,7 +718,7 @@ response = client.chat.completions.create(
 **JavaScript:**
 
 ```typescript
-import { HelpingAI, tools } from 'helpingai-js';
+import { HelpingAI, tools } from 'helpingai';
 
 const getWeather = tools(function getWeather(city: string): string {
   /**
@@ -741,8 +741,8 @@ const response = await client.chat.completions.create({
 
 ```bash
 # Clone the repository
-git clone https://github.com/helpingai/helpingai-js.git
-cd helpingai-js
+git clone https://github.com/helpingai/helpingai.git
+cd helpingai
 
 # Install dependencies
 npm install
@@ -873,7 +873,7 @@ The SDK works in all modern browsers with ES2018+ support:
   </head>
   <body>
     <script type="module">
-      import { HelpingAI } from 'https://cdn.skypack.dev/helpingai-js';
+      import { HelpingAI } from 'https://cdn.skypack.dev/helpingai';
 
       const client = new HelpingAI({
         apiKey: 'your-api-key-here',
@@ -962,8 +962,8 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ```bash
 # Fork and clone the repository
-git clone https://github.com/your-username/helpingai-js.git
-cd helpingai-js
+git clone https://github.com/your-username/helpingai.git
+cd helpingai
 
 # Install dependencies
 npm install
@@ -995,7 +995,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Documentation**: [docs.helpingai.com](https://docs.helpingai.com)
 - **API Reference**: [api.helpingai.com](https://api.helpingai.com)
-- **GitHub Issues**: [Report bugs or request features](https://github.com/helpingai/helpingai-js/issues)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/helpingai/helpingai/issues)
 - **Discord**: [Join our community](https://discord.gg/helpingai)
 - **Email**: support@helpingai.com
 

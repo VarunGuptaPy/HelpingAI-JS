@@ -20,18 +20,19 @@ This guide helps you migrate from the HelpingAI Python SDK to the JavaScript/Typ
 
 ## Quick Reference
 
-| Feature | Python | JavaScript/TypeScript |
-|---------|--------|----------------------|
-| **Import** | `from helpingai import HelpingAI` | `import { HelpingAI } from 'helpingai-js'` |
-| **Client Init** | `HelpingAI(api_key="key")` | `new HelpingAI({ apiKey: 'key' })` |
-| **Tool Decorator** | `@tools` | `tools(function ...)` |
-| **Async Iteration** | `async for chunk in stream:` | `for await (const chunk of stream)` |
-| **Error Types** | `except RateLimitError:` | `if (error instanceof RateLimitError)` |
-| **Type Hints** | `def func(x: str) -> str:` | `function func(x: string): string` |
+| Feature             | Python                            | JavaScript/TypeScript                   |
+| ------------------- | --------------------------------- | --------------------------------------- |
+| **Import**          | `from helpingai import HelpingAI` | `import { HelpingAI } from 'helpingai'` |
+| **Client Init**     | `HelpingAI(api_key="key")`        | `new HelpingAI({ apiKey: 'key' })`      |
+| **Tool Decorator**  | `@tools`                          | `tools(function ...)`                   |
+| **Async Iteration** | `async for chunk in stream:`      | `for await (const chunk of stream)`     |
+| **Error Types**     | `except RateLimitError:`          | `if (error instanceof RateLimitError)`  |
+| **Type Hints**      | `def func(x: str) -> str:`        | `function func(x: string): string`      |
 
 ## Installation & Setup
 
 ### Python
+
 ```bash
 pip install helpingai
 ```
@@ -41,19 +42,21 @@ from helpingai import HelpingAI
 ```
 
 ### JavaScript/TypeScript
+
 ```bash
-npm install helpingai-js
+npm install helpingai
 # or
-yarn add helpingai-js
+yarn add helpingai
 ```
 
 ```typescript
-import { HelpingAI } from 'helpingai-js';
+import { HelpingAI } from 'helpingai';
 ```
 
 ## Client Initialization
 
 ### Python
+
 ```python
 # Basic initialization
 client = HelpingAI(api_key="your-api-key")
@@ -68,6 +71,7 @@ client = HelpingAI(
 ```
 
 ### JavaScript/TypeScript
+
 ```typescript
 // Basic initialization
 const client = new HelpingAI({ apiKey: 'your-api-key' });
@@ -77,11 +81,12 @@ const client = new HelpingAI({
   apiKey: 'your-api-key',
   baseURL: 'https://api.helpingai.com/v1',
   timeout: 30000,
-  maxRetries: 3
+  maxRetries: 3,
 });
 ```
 
 **Key Differences:**
+
 - JavaScript uses `new` keyword for instantiation
 - Options are passed as an object with camelCase properties
 - Timeout is in milliseconds (not seconds)
@@ -89,6 +94,7 @@ const client = new HelpingAI({
 ## Basic Chat Completions
 
 ### Python
+
 ```python
 response = client.chat.completions.create(
     model="Dhanishtha-2.0-preview",
@@ -104,21 +110,23 @@ print(response.choices[0].message.content)
 ```
 
 ### JavaScript/TypeScript
+
 ```typescript
 const response = await client.chat.completions.create({
   model: 'Dhanishtha-2.0-preview',
   messages: [
     { role: 'system', content: 'You are a helpful assistant.' },
-    { role: 'user', content: 'Hello!' }
+    { role: 'user', content: 'Hello!' },
   ],
   max_tokens: 100,
-  temperature: 0.7
+  temperature: 0.7,
 });
 
 console.log(response.choices[0].message.content);
 ```
 
 **Key Differences:**
+
 - JavaScript requires `await` keyword for async operations
 - Object properties use camelCase in JavaScript
 - String literals use single quotes by convention in JavaScript
@@ -126,6 +134,7 @@ console.log(response.choices[0].message.content);
 ## Streaming Responses
 
 ### Python
+
 ```python
 stream = client.chat.completions.create(
     model="Dhanishtha-2.0-preview",
@@ -139,11 +148,12 @@ for chunk in stream:
 ```
 
 ### JavaScript/TypeScript
+
 ```typescript
 const stream = await client.chat.completions.create({
   model: 'Dhanishtha-2.0-preview',
   messages: [{ role: 'user', content: 'Tell me a story' }],
-  stream: true
+  stream: true,
 });
 
 for await (const chunk of stream) {
@@ -154,19 +164,21 @@ for await (const chunk of stream) {
 ```
 
 **Key Differences:**
+
 - JavaScript uses `for await...of` instead of `for...in`
 - Use `process.stdout.write()` instead of `print(..., end="")`
 
 ## Tool System
 
 ### Python
+
 ```python
 from helpingai import HelpingAI, tools
 
 @tools
 def get_weather(city: str, units: str = "celsius") -> str:
     """Get weather information for a city.
-    
+
     Args:
         city: The city name
         units: Temperature units (celsius or fahrenheit)
@@ -176,7 +188,7 @@ def get_weather(city: str, units: str = "celsius") -> str:
 @tools
 def calculate(expression: str) -> float:
     """Perform mathematical calculations.
-    
+
     Args:
         expression: Mathematical expression to evaluate
     """
@@ -192,11 +204,12 @@ response = client.chat.completions.create(
 ```
 
 ### JavaScript/TypeScript
+
 ```typescript
-import { HelpingAI, tools } from 'helpingai-js';
+import { HelpingAI, tools } from 'helpingai';
 
 const getWeather = tools(function getWeather(
-  city: string, 
+  city: string,
   units: 'celsius' | 'fahrenheit' = 'celsius'
 ): string {
   /**
@@ -219,12 +232,13 @@ const calculate = tools(function calculate(expression: string): number {
 const client = new HelpingAI({ apiKey: 'your-key' });
 const response = await client.chat.completions.create({
   model: 'Dhanishtha-2.0-preview',
-  messages: [{ role: 'user', content: 'What\'s the weather in Paris?' }],
-  tools: [getWeather, calculate]
+  messages: [{ role: 'user', content: "What's the weather in Paris?" }],
+  tools: [getWeather, calculate],
 });
 ```
 
 **Key Differences:**
+
 - JavaScript uses `tools(function ...)` wrapper instead of `@tools` decorator
 - JSDoc comments (`/** */`) instead of Python docstrings
 - TypeScript provides better type safety with union types (`'celsius' | 'fahrenheit'`)
@@ -233,6 +247,7 @@ const response = await client.chat.completions.create({
 ## MCP Integration
 
 ### Python
+
 ```python
 from helpingai import HelpingAI, MCPClient
 
@@ -258,16 +273,17 @@ await mcp_client.disconnect()
 ```
 
 ### JavaScript/TypeScript
+
 ```typescript
-import { HelpingAI, MCPClient } from 'helpingai-js';
+import { HelpingAI, MCPClient } from 'helpingai';
 
 // Connect to MCP server
 const mcpClient = new MCPClient({
   transport: {
     type: 'stdio',
     command: 'node',
-    args: ['path/to/mcp-server.js']
-  }
+    args: ['path/to/mcp-server.js'],
+  },
 });
 await mcpClient.connect();
 
@@ -276,13 +292,14 @@ const client = new HelpingAI({ apiKey: 'your-key' });
 const response = await client.chat.completions.create({
   model: 'Dhanishtha-2.0-preview',
   messages: [{ role: 'user', content: 'Get my calendar' }],
-  mcp: mcpClient
+  mcp: mcpClient,
 });
 
 await mcpClient.disconnect();
 ```
 
 **Key Differences:**
+
 - JavaScript uses `new MCPClient()` constructor
 - Configuration object uses camelCase properties
 - Same async/await patterns apply
@@ -290,11 +307,12 @@ await mcpClient.disconnect();
 ## Error Handling
 
 ### Python
+
 ```python
 from helpingai import (
-    HelpingAI, 
-    APIError, 
-    AuthenticationError, 
+    HelpingAI,
+    APIError,
+    AuthenticationError,
     RateLimitError,
     TimeoutError
 )
@@ -315,19 +333,14 @@ except APIError as e:
 ```
 
 ### JavaScript/TypeScript
+
 ```typescript
-import { 
-  HelpingAI, 
-  APIError, 
-  AuthenticationError, 
-  RateLimitError,
-  TimeoutError 
-} from 'helpingai-js';
+import { HelpingAI, APIError, AuthenticationError, RateLimitError, TimeoutError } from 'helpingai';
 
 try {
   const response = await client.chat.completions.create({
     model: 'Dhanishtha-2.0-preview',
-    messages: [{ role: 'user', content: 'Hello' }]
+    messages: [{ role: 'user', content: 'Hello' }],
   });
 } catch (error) {
   if (error instanceof AuthenticationError) {
@@ -343,6 +356,7 @@ try {
 ```
 
 **Key Differences:**
+
 - JavaScript uses `instanceof` instead of exception type matching
 - Single `catch` block with conditional logic
 - Property access uses camelCase (`retryAfter` vs `retry_after`)
@@ -350,16 +364,17 @@ try {
 ## Async/Await Patterns
 
 ### Python
+
 ```python
 import asyncio
 
 async def main():
     client = HelpingAI(api_key="your-key")
-    
+
     # Sequential requests
     response1 = await client.chat.completions.create(...)
     response2 = await client.chat.completions.create(...)
-    
+
     # Concurrent requests
     responses = await asyncio.gather(
         client.chat.completions.create(...),
@@ -372,14 +387,15 @@ if __name__ == "__main__":
 ```
 
 ### JavaScript/TypeScript
+
 ```typescript
 async function main() {
   const client = new HelpingAI({ apiKey: 'your-key' });
-  
+
   // Sequential requests
   const response1 = await client.chat.completions.create({...});
   const response2 = await client.chat.completions.create({...});
-  
+
   // Concurrent requests
   const responses = await Promise.all([
     client.chat.completions.create({...}),
@@ -392,6 +408,7 @@ main().catch(console.error);
 ```
 
 **Key Differences:**
+
 - JavaScript uses `Promise.all()` instead of `asyncio.gather()`
 - No need for `asyncio.run()` - just call the async function
 - Error handling with `.catch()` is common in JavaScript
@@ -399,6 +416,7 @@ main().catch(console.error);
 ## Type Safety
 
 ### Python (with type hints)
+
 ```python
 from typing import List, Optional, Union
 from helpingai import HelpingAI, ChatMessage
@@ -414,8 +432,9 @@ client: HelpingAI = HelpingAI(api_key="your-key")
 ```
 
 ### TypeScript
+
 ```typescript
-import { HelpingAI, ChatMessage } from 'helpingai-js';
+import { HelpingAI, ChatMessage } from 'helpingai';
 
 function createMessages(content: string, systemPrompt?: string): ChatMessage[] {
   const messages: ChatMessage[] = [];
@@ -430,6 +449,7 @@ const client: HelpingAI = new HelpingAI({ apiKey: 'your-key' });
 ```
 
 **Key Differences:**
+
 - TypeScript has built-in type checking (no separate `typing` import needed)
 - Optional parameters use `?` syntax instead of `Optional[]`
 - Array types use `Type[]` syntax instead of `List[Type]`
@@ -437,6 +457,7 @@ const client: HelpingAI = new HelpingAI({ apiKey: 'your-key' });
 ## Environment Variables
 
 ### Python
+
 ```python
 import os
 from helpingai import HelpingAI
@@ -452,8 +473,9 @@ client = HelpingAI(
 ```
 
 ### JavaScript/TypeScript
+
 ```typescript
-import { HelpingAI } from 'helpingai-js';
+import { HelpingAI } from 'helpingai';
 
 // Reading environment variables (Node.js)
 const apiKey = process.env.HELPINGAI_API_KEY;
@@ -461,7 +483,7 @@ const baseURL = process.env.HELPINGAI_BASE_URL || 'https://api.helpingai.com/v1'
 
 const client = new HelpingAI({
   apiKey,
-  baseURL
+  baseURL,
 });
 
 // For browser environments, use build-time environment variables
@@ -469,6 +491,7 @@ const client = new HelpingAI({
 ```
 
 **Key Differences:**
+
 - Node.js uses `process.env` instead of `os.getenv()`
 - Browser environments can't access environment variables directly
 - Use logical OR (`||`) for default values instead of second parameter
@@ -476,6 +499,7 @@ const client = new HelpingAI({
 ## Best Practices
 
 ### Python Best Practices
+
 ```python
 import asyncio
 from contextlib import asynccontextmanager
@@ -495,9 +519,11 @@ async def main():
 ```
 
 ### JavaScript/
+
 TypeScript Best Practices
+
 ```typescript
-import { HelpingAI } from 'helpingai-js';
+import { HelpingAI } from 'helpingai';
 
 // Resource management with try/finally
 async function withClient<T>(fn: (client: HelpingAI) => Promise<T>): Promise<T> {
@@ -517,6 +543,7 @@ async function main() {
 ```
 
 **Key Differences:**
+
 - JavaScript doesn't have context managers, use try/finally blocks
 - Create utility functions for resource management
 - TypeScript generics provide type safety for utility functions
@@ -526,18 +553,21 @@ async function main() {
 ### 1. Forgetting `await`
 
 **Python:**
+
 ```python
 # This works in Python
 response = client.chat.completions.create(...)
 ```
 
 **JavaScript (Wrong):**
+
 ```typescript
 // This returns a Promise, not the actual response!
 const response = client.chat.completions.create({...});
 ```
 
 **JavaScript (Correct):**
+
 ```typescript
 // Always use await with async operations
 const response = await client.chat.completions.create({...});
@@ -546,6 +576,7 @@ const response = await client.chat.completions.create({...});
 ### 2. Snake Case vs Camel Case
 
 **Python:**
+
 ```python
 response = client.chat.completions.create(
     max_tokens=100,
@@ -554,18 +585,20 @@ response = client.chat.completions.create(
 ```
 
 **JavaScript (Wrong):**
+
 ```typescript
 const response = await client.chat.completions.create({
-  max_tokens: 100,  // Wrong: should be camelCase
-  tool_choice: 'auto'  // Wrong: should be camelCase
+  max_tokens: 100, // Wrong: should be camelCase
+  tool_choice: 'auto', // Wrong: should be camelCase
 });
 ```
 
 **JavaScript (Correct):**
+
 ```typescript
 const response = await client.chat.completions.create({
-  max_tokens: 100,     // API maintains snake_case for compatibility
-  tool_choice: 'auto'  // API maintains snake_case for compatibility
+  max_tokens: 100, // API maintains snake_case for compatibility
+  tool_choice: 'auto', // API maintains snake_case for compatibility
 });
 ```
 
@@ -574,6 +607,7 @@ const response = await client.chat.completions.create({
 ### 3. Error Handling Patterns
 
 **Python:**
+
 ```python
 try:
     response = client.chat.completions.create(...)
@@ -586,6 +620,7 @@ except APIError:
 ```
 
 **JavaScript (Wrong):**
+
 ```typescript
 try {
   const response = await client.chat.completions.create({...});
@@ -597,6 +632,7 @@ try {
 ```
 
 **JavaScript (Correct):**
+
 ```typescript
 try {
   const response = await client.chat.completions.create({...});
@@ -612,6 +648,7 @@ try {
 ### 4. Tool Function Definitions
 
 **Python:**
+
 ```python
 @tools
 def my_tool(param: str) -> str:
@@ -620,6 +657,7 @@ def my_tool(param: str) -> str:
 ```
 
 **JavaScript (Wrong):**
+
 ```typescript
 // Wrong: trying to use decorator syntax
 @tools
@@ -629,6 +667,7 @@ function myTool(param: string): string {
 ```
 
 **JavaScript (Correct):**
+
 ```typescript
 const myTool = tools(function myTool(param: string): string {
   /**
@@ -642,6 +681,7 @@ const myTool = tools(function myTool(param: string): string {
 ### 5. Streaming Iteration
 
 **Python:**
+
 ```python
 for chunk in stream:
     if chunk.choices[0].delta.content:
@@ -649,6 +689,7 @@ for chunk in stream:
 ```
 
 **JavaScript (Wrong):**
+
 ```typescript
 // Wrong: regular for...of doesn't work with async iterables
 for (const chunk of stream) {
@@ -659,6 +700,7 @@ for (const chunk of stream) {
 ```
 
 **JavaScript (Correct):**
+
 ```typescript
 // Correct: use for await...of for async iterables
 for await (const chunk of stream) {
@@ -671,12 +713,14 @@ for await (const chunk of stream) {
 ## Migration Checklist
 
 ### Pre-Migration
+
 - [ ] Review your Python code and identify all HelpingAI SDK usage
 - [ ] List all custom tools and their signatures
 - [ ] Document any custom error handling logic
 - [ ] Note any MCP integrations or external dependencies
 
 ### During Migration
+
 - [ ] Install the JavaScript/TypeScript SDK
 - [ ] Set up TypeScript configuration (if using TypeScript)
 - [ ] Convert client initialization to use object configuration
@@ -686,6 +730,7 @@ for await (const chunk of stream) {
 - [ ] Update environment variable access patterns
 
 ### Post-Migration
+
 - [ ] Test all functionality with the new SDK
 - [ ] Verify error handling works as expected
 - [ ] Check that streaming responses work correctly
@@ -699,6 +744,7 @@ for await (const chunk of stream) {
 ### Complete Chat Application
 
 **Python Version:**
+
 ```python
 import asyncio
 from helpingai import HelpingAI, tools
@@ -715,7 +761,7 @@ def calculate(expression: str) -> float:
 
 async def main():
     client = HelpingAI(api_key="your-key")
-    
+
     try:
         response = await client.chat.completions.create(
             model="Dhanishtha-2.0-preview",
@@ -725,9 +771,9 @@ async def main():
             tools=[get_weather, calculate],
             tool_choice="auto"
         )
-        
+
         print(response.choices[0].message.content)
-        
+
     except Exception as e:
         print(f"Error: {e}")
     finally:
@@ -738,8 +784,9 @@ if __name__ == "__main__":
 ```
 
 **JavaScript/TypeScript Version:**
+
 ```typescript
-import { HelpingAI, tools } from 'helpingai-js';
+import { HelpingAI, tools } from 'helpingai';
 
 const getWeather = tools(function getWeather(city: string): string {
   /**
@@ -759,19 +806,16 @@ const calculate = tools(function calculate(expression: string): number {
 
 async function main() {
   const client = new HelpingAI({ apiKey: 'your-key' });
-  
+
   try {
     const response = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
-      messages: [
-        { role: 'user', content: 'What\'s the weather in Paris and what\'s 15 * 23?' }
-      ],
+      messages: [{ role: 'user', content: "What's the weather in Paris and what's 15 * 23?" }],
       tools: [getWeather, calculate],
-      tool_choice: 'auto'
+      tool_choice: 'auto',
     });
-    
+
     console.log(response.choices[0].message.content);
-    
   } catch (error) {
     console.error('Error:', error);
   } finally {
@@ -785,6 +829,7 @@ main().catch(console.error);
 ### Streaming with Progress
 
 **Python Version:**
+
 ```python
 import asyncio
 import time
@@ -792,24 +837,24 @@ from helpingai import HelpingAI
 
 async def streaming_example():
     client = HelpingAI(api_key="your-key")
-    
+
     stream = await client.chat.completions.create(
         model="Dhanishtha-2.0-preview",
         messages=[{"role": "user", "content": "Tell me a long story"}],
         stream=True
     )
-    
+
     content = ""
     token_count = 0
     start_time = time.time()
-    
+
     async for chunk in stream:
         if chunk.choices[0].delta.content:
             delta = chunk.choices[0].delta.content
             content += delta
             token_count += 1
             print(delta, end="", flush=True)
-        
+
         if chunk.choices[0].finish_reason:
             duration = time.time() - start_time
             print(f"\n\nCompleted: {token_count} tokens in {duration:.2f}s")
@@ -819,22 +864,23 @@ asyncio.run(streaming_example())
 ```
 
 **JavaScript/TypeScript Version:**
+
 ```typescript
-import { HelpingAI } from 'helpingai-js';
+import { HelpingAI } from 'helpingai';
 
 async function streamingExample() {
   const client = new HelpingAI({ apiKey: 'your-key' });
-  
+
   const stream = await client.chat.completions.create({
     model: 'Dhanishtha-2.0-preview',
     messages: [{ role: 'user', content: 'Tell me a long story' }],
-    stream: true
+    stream: true,
   });
-  
+
   let content = '';
   let tokenCount = 0;
   const startTime = Date.now();
-  
+
   for await (const chunk of stream) {
     if (chunk.choices[0].delta.content) {
       const delta = chunk.choices[0].delta.content;
@@ -842,7 +888,7 @@ async function streamingExample() {
       tokenCount++;
       process.stdout.write(delta);
     }
-    
+
     if (chunk.choices[0].finish_reason) {
       const duration = Date.now() - startTime;
       console.log(`\n\nCompleted: ${tokenCount} tokens in ${duration}ms`);
@@ -857,6 +903,7 @@ streamingExample().catch(console.error);
 ## Performance Considerations
 
 ### Python
+
 ```python
 # Connection pooling is handled automatically
 client = HelpingAI(api_key="your-key")
@@ -871,6 +918,7 @@ responses = await asyncio.gather(
 ```
 
 ### JavaScript/TypeScript
+
 ```typescript
 // Connection pooling is handled automatically
 const client = new HelpingAI({ apiKey: 'your-key' });
@@ -886,6 +934,7 @@ const responses = await Promise.all([
 ## Testing Differences
 
 ### Python Testing
+
 ```python
 import pytest
 from unittest.mock import AsyncMock, patch
@@ -897,29 +946,30 @@ async def test_chat_completion():
         mock_client.return_value.chat.completions.create = AsyncMock(
             return_value={"choices": [{"message": {"content": "Test response"}}]}
         )
-        
+
         client = HelpingAI(api_key="test")
         response = await client.chat.completions.create(...)
-        
+
         assert response["choices"][0]["message"]["content"] == "Test response"
 ```
 
 ### JavaScript/TypeScript Testing
+
 ```typescript
-import { HelpingAI } from 'helpingai-js';
+import { HelpingAI } from 'helpingai';
 
 // Using Jest
-jest.mock('helpingai-js');
+jest.mock('helpingai');
 const mockClient = HelpingAI as jest.MockedClass<typeof HelpingAI>;
 
 test('chat completion', async () => {
   mockClient.prototype.chat.completions.create.mockResolvedValue({
     choices: [{ message: { content: 'Test response' } }]
   });
-  
+
   const client = new HelpingAI({ apiKey: 'test' });
   const response = await client.chat.completions.create({...});
-  
+
   expect(response.choices[0].message.content).toBe('Test response');
 });
 ```
