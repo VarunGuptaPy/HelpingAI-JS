@@ -37,7 +37,7 @@ class ToolRegistry {
         return Array.from(this.tools.entries()).map(([name, entry]) => ({
             name,
             tool: entry.tool,
-            fn: entry.fn
+            fn: entry.fn,
         }));
     }
     /**

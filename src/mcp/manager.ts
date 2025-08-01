@@ -24,7 +24,7 @@ export class MCPManager {
     }
 
     const serverNames = Object.keys(config.mcpServers);
-    const connectionPromises = serverNames.map(async (serverName) => {
+    const connectionPromises = serverNames.map(async serverName => {
       const serverConfig = config.mcpServers[serverName];
       try {
         await this.client.connect(serverName, serverConfig);
@@ -62,15 +62,16 @@ export class MCPManager {
         parameters: mcpTool.inputSchema || {
           type: 'object',
           properties: {},
-          required: []
-        }
-      }
+          required: [],
+        },
+      },
     };
   }
 
   /**
    * Execute MCP tool call
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async executeTool(toolName: string, args: Record<string, any>): Promise<any> {
     if (!this.initialized) {
       throw new MCPError('MCP manager not initialized');
@@ -78,7 +79,7 @@ export class MCPManager {
 
     try {
       const result = await this.client.callTool(toolName, args);
-      
+
       // Convert MCP result to simple string/object format
       if (result.isError) {
         throw new MCPError(`MCP tool execution failed: ${JSON.stringify(result.content)}`);
@@ -147,11 +148,11 @@ export class MCPManager {
     tools: Tool[];
   }> {
     const manager = new MCPManager();
-    
+
     try {
       await manager.initialize(config);
       const tools = manager.getToolsAsOpenAIFormat();
-      
+
       return { manager, tools };
     } catch (error) {
       console.warn('Failed to initialize MCP manager:', error);
@@ -196,6 +197,7 @@ export class MCPManager {
       // Validate HTTP config
       if (hasHttpConfig) {
         try {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           new URL(serverConfig.url!);
         } catch {
           errors.push(`Server ${serverName} has invalid URL: ${serverConfig.url}`);
@@ -205,7 +207,7 @@ export class MCPManager {
 
     return {
       valid: errors.length === 0,
-      errors
+      errors,
     };
   }
 }

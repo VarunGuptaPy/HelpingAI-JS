@@ -1,14 +1,14 @@
 /**
  * HelpingAI Tool Usage Examples
- * 
+ *
  * This script demonstrates proper usage patterns for the HelpingAI client,
  * specifically addressing common issues with tool configuration and API requests.
- * 
+ *
  * Common Issues Addressed:
  * 1. Tool conversion errors - "Unsupported tools format"
  * 2. HTTP 400 errors suggesting stream=true
  * 3. Proper tool format specifications
- * 
+ *
  * Port of the Python troubleshooting_guide.py
  */
 
@@ -19,27 +19,26 @@ import { HelpingAI } from '../src';
  */
 async function exampleBuiltInTools(): Promise<void> {
   console.log('=== mExample 1: Built-in Tools ===');
-  
+
   const client = new HelpingAI({
-    apiKey: "your-api-key" // Replace with your actual API key or use environment variable
+    apiKey: 'your-api-key', // Replace with your actual API key or use environment variable
   });
 
   // ✅ CORRECT: Use built-in tool names as strings
-  const tools = ["code_interpreter", "web_search"];
+  const tools = ['code_interpreter', 'web_search'];
 
   try {
     const response = await client.chat.completions.create({
-      model: "HelpingAI2.5-10B",
-      messages: [{ role: "user", content: "What's 2+2 and search for Python tutorials?" }],
+      model: 'HelpingAI2.5-10B',
+      messages: [{ role: 'user', content: "What's 2+2 and search for Python tutorials?" }],
       tools: tools,
-      stream: false // Try stream=true if you get HTTP 400 errors
+      stream: false, // Try stream=true if you get HTTP 400 errors
     });
 
     if ('choices' in response) {
       console.log('✅ Request successful with built-in tools');
       console.log('Response:', response.choices[0].message.content);
     }
-
   } catch (error: any) {
     console.log(`❌ Error: ${error.message || error}`);
     if (error.message?.includes('400') && error.message?.toLowerCase().includes('stream')) {
@@ -55,44 +54,43 @@ async function exampleBuiltInTools(): Promise<void> {
  */
 async function exampleOpenAIFormatTools(): Promise<void> {
   console.log('\n=== Example 2: OpenAI Format Tools ===');
-  
+
   const client = new HelpingAI({
-    apiKey: "your-api-key" // Replace with your actual API key or use environment variable
+    apiKey: 'your-api-key', // Replace with your actual API key or use environment variable
   });
 
   // ✅ CORRECT: OpenAI tool format
   const tools = [
     {
-      type: "function" as const,
+      type: 'function' as const,
       function: {
-        name: "calculate",
-        description: "Perform basic math calculations",
+        name: 'calculate',
+        description: 'Perform basic math calculations',
         parameters: {
-          type: "object",
+          type: 'object',
           properties: {
             expression: {
-              type: "string",
-              description: "Math expression to evaluate"
-            }
+              type: 'string',
+              description: 'Math expression to evaluate',
+            },
           },
-          required: ["expression"]
-        }
-      }
-    }
+          required: ['expression'],
+        },
+      },
+    },
   ];
 
   try {
     const response = await client.chat.completions.create({
-      model: "HelpingAI2.5-10B",
-      messages: [{ role: "user", content: "Calculate 15 * 23" }],
-      tools: tools
+      model: 'HelpingAI2.5-10B',
+      messages: [{ role: 'user', content: 'Calculate 15 * 23' }],
+      tools: tools,
     });
 
     if ('choices' in response) {
       console.log('✅ Request successful with OpenAI format tools');
       console.log('Response:', response.choices[0].message.content);
     }
-
   } catch (error: any) {
     console.log(`❌ Error: ${error.message || error}`);
   } finally {
@@ -105,9 +103,9 @@ async function exampleOpenAIFormatTools(): Promise<void> {
  */
 async function exampleMCPTools(): Promise<void> {
   console.log('\n=== Example 3: MCP Tools ===');
-  
+
   const client = new HelpingAI({
-    apiKey: "your-api-key" // Replace with your actual API key or use environment variable
+    apiKey: 'your-api-key', // Replace with your actual API key or use environment variable
   });
 
   // ✅ CORRECT: MCP server configuration
@@ -116,28 +114,27 @@ async function exampleMCPTools(): Promise<void> {
       mcpServers: {
         time: {
           command: 'uvx',
-          args: ['mcp-server-time']
+          args: ['mcp-server-time'],
         },
         fetch: {
           command: 'uvx',
-          args: ['mcp-server-fetch']
-        }
-      }
-    }
+          args: ['mcp-server-fetch'],
+        },
+      },
+    },
   ];
 
   try {
     const response = await client.chat.completions.create({
-      model: "HelpingAI2.5-10B",
-      messages: [{ role: "user", content: "What time is it?" }],
-      tools: tools
+      model: 'HelpingAI2.5-10B',
+      messages: [{ role: 'user', content: 'What time is it?' }],
+      tools: tools,
     });
 
     if ('choices' in response) {
       console.log('✅ Request successful with MCP tools');
       console.log('Response:', response.choices[0].message.content);
     }
-
   } catch (error: any) {
     if (error.message?.includes('MCP')) {
       console.log('❌ MCP dependencies not installed. Run: npm install @modelcontextprotocol/sdk');
@@ -154,40 +151,39 @@ async function exampleMCPTools(): Promise<void> {
  */
 async function exampleMixedTools(): Promise<void> {
   console.log('\n=== Example 4: Mixed Tools ===');
-  
+
   const client = new HelpingAI({
-    apiKey: "your-api-key" // Replace with your actual API key or use environment variable
+    apiKey: 'your-api-key', // Replace with your actual API key or use environment variable
   });
 
   // ✅ CORRECT: Mix built-in tools with OpenAI format
   const tools = [
-    "code_interpreter", // Built-in tool
+    'code_interpreter', // Built-in tool
     {
-      type: "function" as const,
+      type: 'function' as const,
       function: {
-        name: "custom_tool",
-        description: "A custom tool",
-        parameters: { 
-          type: "object", 
+        name: 'custom_tool',
+        description: 'A custom tool',
+        parameters: {
+          type: 'object',
           properties: {},
-          required: []
-        }
-      }
-    }
+          required: [],
+        },
+      },
+    },
   ];
 
   try {
     const response = await client.chat.completions.create({
-      model: "HelpingAI2.5-10B",
-      messages: [{ role: "user", content: "Help me with coding" }],
-      tools: tools
+      model: 'HelpingAI2.5-10B',
+      messages: [{ role: 'user', content: 'Help me with coding' }],
+      tools: tools,
     });
 
     if ('choices' in response) {
       console.log('✅ Request successful with mixed tools');
       console.log('Response:', response.choices[0].message.content);
     }
-
   } catch (error: any) {
     console.log(`❌ Error: ${error.message || error}`);
   } finally {
@@ -200,18 +196,18 @@ async function exampleMixedTools(): Promise<void> {
  */
 async function exampleStreamingUsage(): Promise<void> {
   console.log('\n=== Example 5: Streaming Usage ===');
-  
+
   const client = new HelpingAI({
-    apiKey: "your-api-key" // Replace with your actual API key or use environment variable
+    apiKey: 'your-api-key', // Replace with your actual API key or use environment variable
   });
 
   try {
     // If you get HTTP 400 errors, try streaming
     const response = await client.chat.completions.create({
-      model: "HelpingAI2.5-10B",
-      messages: [{ role: "user", content: "Tell me a story" }],
-      tools: ["web_search"],
-      stream: true // 🔑 KEY: Enable streaming
+      model: 'HelpingAI2.5-10B',
+      messages: [{ role: 'user', content: 'Tell me a story' }],
+      tools: ['web_search'],
+      stream: true, // 🔑 KEY: Enable streaming
     });
 
     console.log('✅ Streaming request initiated');
@@ -229,9 +225,8 @@ async function exampleStreamingUsage(): Promise<void> {
           fullContent += chunk.choices[0].delta.content;
         }
       }
-      console.log('\n✅ Streaming completed');
+      console.log(`\n✅ Streaming completed. Received ${fullContent.length} characters`);
     }
-
   } catch (error: any) {
     console.log(`❌ Error: ${error.message || error}`);
   } finally {
@@ -244,24 +239,24 @@ async function exampleStreamingUsage(): Promise<void> {
  */
 function commonMistakes(): void {
   console.log('\n=== Common Mistakes to Avoid ===');
-  
+
   // ❌ WRONG: Invalid tool names
-  console.log('❌ DON\'T: Use invalid built-in tool names');
-  console.log('   tools = [\'invalid_tool\']  // Will cause warnings');
-  
+  console.log("❌ DON'T: Use invalid built-in tool names");
+  console.log("   tools = ['invalid_tool']  // Will cause warnings");
+
   // ❌ WRONG: Wrong data types
-  console.log('❌ DON\'T: Use wrong data types for tools');
+  console.log("❌ DON'T: Use wrong data types for tools");
   console.log('   tools = [1, 2, 3]  // Will cause warnings');
-  
+
   // ❌ WRONG: Incorrect format
-  console.log('❌ DON\'T: Use incorrect tool format');
-  console.log('   tools = {\'not\': \'a list\'}  // Should be a list');
-  
+  console.log("❌ DON'T: Use incorrect tool format");
+  console.log("   tools = {'not': 'a list'}  // Should be a list");
+
   // ✅ CORRECT alternatives
   console.log('\n✅ DO: Use correct formats');
-  console.log('   tools = [\'code_interpreter\', \'web_search\']  // Built-in tools');
-  console.log('   tools = [{\'type\': \'function\', ...}]  // OpenAI format');
-  console.log('   tools = [{\'mcpServers\': {...}}]  // MCP format');
+  console.log("   tools = ['code_interpreter', 'web_search']  // Built-in tools");
+  console.log("   tools = [{'type': 'function', ...}]  // OpenAI format");
+  console.log("   tools = [{'mcpServers': {...}}]  // MCP format");
 }
 
 /**
@@ -269,21 +264,21 @@ function commonMistakes(): void {
  */
 function troubleshootingTips(): void {
   console.log('\n=== Troubleshooting Tips ===');
-  
-  console.log('🔧 If you see \'Tool conversion failed\' warnings:');
+
+  console.log("🔧 If you see 'Tool conversion failed' warnings:");
   console.log('   - Check that tool names are correct (code_interpreter, web_search)');
   console.log('   - Ensure tools are in proper format (array of strings/objects)');
   console.log('   - For MCP tools, install: npm install @modelcontextprotocol/sdk');
-  
-  console.log('\n🔧 If you get HTTP 400 \'stream=true\' errors:');
+
+  console.log("\n🔧 If you get HTTP 400 'stream=true' errors:");
   console.log('   - Try setting stream=true in your request');
   console.log('   - Some models/endpoints require streaming');
   console.log('   - Tool-heavy requests often need streaming');
-  
-  console.log('\n🔧 If you get \'Unknown built-in tool\' errors:');
+
+  console.log("\n🔧 If you get 'Unknown built-in tool' errors:");
   console.log('   - Available built-in tools: code_interpreter, web_search');
-  console.log('   - For custom tools, use OpenAI format with \'type\': \'function\'');
-  
+  console.log("   - For custom tools, use OpenAI format with 'type': 'function'");
+
   console.log('\n🔧 For MCP tools:');
   console.log('   - Install MCP dependencies: npm install @modelcontextprotocol/sdk');
   console.log('   - Ensure MCP servers are properly configured');
@@ -295,17 +290,17 @@ function troubleshootingTips(): void {
  */
 async function performanceOptimizationTips(): Promise<void> {
   console.log('\n=== Performance Optimization Tips ===');
-  
+
   console.log('⚡ Request Optimization:');
   console.log('   - Use streaming for long responses');
   console.log('   - Set appropriate timeout values');
   console.log('   - Batch multiple requests when possible');
-  
+
   console.log('\n⚡ Tool Usage Optimization:');
   console.log('   - Only include tools that are actually needed');
   console.log('   - Use built-in tools when available (faster than custom)');
   console.log('   - Cache tool results when appropriate');
-  
+
   console.log('\n⚡ Error Handling Best Practices:');
   console.log('   - Implement retry logic with exponential backoff');
   console.log('   - Handle rate limiting gracefully');
@@ -313,28 +308,28 @@ async function performanceOptimizationTips(): Promise<void> {
 
   // Example of retry logic
   const client = new HelpingAI({
-    apiKey: "your-api-key" // Replace with your actual API key or use environment variable
+    apiKey: 'your-api-key', // Replace with your actual API key or use environment variable
   });
 
   async function makeRequestWithRetry(maxRetries: number = 3): Promise<void> {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         const response = await client.chat.completions.create({
-          model: "HelpingAI2.5-10B",
-          messages: [{ role: "user", content: "Hello" }]
+          model: 'HelpingAI2.5-10B',
+          messages: [{ role: 'user', content: 'Hello' }],
         });
-        
+
         if ('choices' in response) {
           console.log('✅ Request successful on attempt', attempt);
           return;
         }
       } catch (error: any) {
         console.log(`❌ Attempt ${attempt} failed:`, error.message);
-        
+
         if (attempt === maxRetries) {
           throw error;
         }
-        
+
         // Wait before retrying (exponential backoff)
         const delay = Math.pow(2, attempt) * 1000;
         await new Promise(resolve => setTimeout(resolve, delay));
@@ -356,45 +351,44 @@ async function performanceOptimizationTips(): Promise<void> {
  */
 async function debuggingTechniques(): Promise<void> {
   console.log('\n=== Debugging Techniques ===');
-  
+
   console.log('🐛 Enable Debug Logging:');
   console.log('   - Set environment variable: DEBUG=helpingai:*');
   console.log('   - Use console.log for request/response inspection');
   console.log('   - Check network requests in browser dev tools');
-  
+
   console.log('\n🐛 Common Debug Scenarios:');
-  
+
   const client = new HelpingAI({
-    apiKey: "your-api-key" // Replace with your actual API key or use environment variable
+    apiKey: 'your-api-key', // Replace with your actual API key or use environment variable
   });
 
   try {
     // Debug: Log request details
     const requestData = {
-      model: "HelpingAI2.5-10B",
-      messages: [{ role: "user" as const, content: "Debug test" }],
-      tools: ["code_interpreter"]
+      model: 'HelpingAI2.5-10B',
+      messages: [{ role: 'user' as const, content: 'Debug test' }],
+      tools: ['code_interpreter'],
     };
-    
+
     console.log('🔍 Request data:', JSON.stringify(requestData, null, 2));
-    
+
     const response = await client.chat.completions.create(requestData);
-    
+
     if ('choices' in response) {
       console.log('🔍 Response structure:', {
         id: response.id,
         model: response.model,
         choices_count: response.choices.length,
-        has_tool_calls: !!response.choices[0].message.tool_calls
+        has_tool_calls: !!response.choices[0].message.tool_calls,
       });
     }
-    
   } catch (error: any) {
     console.log('🔍 Error details:', {
       name: error.name,
       message: error.message,
       status: error.status,
-      type: error.type
+      type: error.type,
     });
   } finally {
     await client.cleanup();
@@ -405,7 +399,7 @@ async function debuggingTechniques(): Promise<void> {
 async function main(): Promise<void> {
   console.log('HelpingAI Tool Usage Examples');
   console.log('='.repeat(40));
-  
+
   // Set up API key check
   console.log('⚠️  Replace "your-api-key" with your actual HelpingAI API key');
   console.log('   You can get your API key from https://helpingai.co/dashboard');
@@ -418,18 +412,17 @@ async function main(): Promise<void> {
     await exampleMCPTools();
     await exampleMixedTools();
     await exampleStreamingUsage();
-    
+
     // Show common mistakes and tips
     commonMistakes();
     troubleshootingTips();
-    
+
     // Additional examples
     await performanceOptimizationTips();
     await debuggingTechniques();
 
     console.log('\n✅ For more examples, see: examples/mcp-integration.ts');
     console.log('📚 Documentation: https://helpingai.co/docs');
-    
   } catch (error) {
     console.error('Error in main:', error);
   }
@@ -453,5 +446,5 @@ export {
   commonMistakes,
   troubleshootingTips,
   performanceOptimizationTips,
-  debuggingTechniques
+  debuggingTechniques,
 };

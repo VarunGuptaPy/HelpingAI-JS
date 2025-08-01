@@ -20,7 +20,7 @@ export class MCPClient {
                 config,
                 initialized: false,
                 tools: [],
-                resources: []
+                resources: [],
             };
             // Initialize connection based on type
             if (config.command) {
@@ -66,9 +66,9 @@ export class MCPClient {
                 inputSchema: {
                     type: 'object',
                     properties: {},
-                    required: []
-                }
-            }
+                    required: [],
+                },
+            },
         ];
     }
     /**
@@ -86,9 +86,9 @@ export class MCPClient {
                 inputSchema: {
                     type: 'object',
                     properties: {},
-                    required: []
-                }
-            }
+                    required: [],
+                },
+            },
         ];
     }
     /**
@@ -129,9 +129,9 @@ export class MCPClient {
                 content: [
                     {
                         type: 'text',
-                        text: `Mock response from MCP tool ${toolName}`
-                    }
-                ]
+                        text: `Mock response from MCP tool ${toolName}`,
+                    },
+                ],
             };
         }
         catch (error) {

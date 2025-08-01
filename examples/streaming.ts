@@ -1,6 +1,6 @@
 /**
  * Streaming Examples for HelpingAI JavaScript SDK
- * 
+ *
  * This example demonstrates streaming responses from the HelpingAI API:
  * - Basic streaming
  * - Server-sent events handling
@@ -16,36 +16,36 @@ import { HelpingAI } from '../src';
  */
 async function basicStreamingExample(): Promise<void> {
   console.log('=== Example 1: Basic Streaming ===');
-  
+
   const client = new HelpingAI({
-    apiKey: 'your-api-key'
+    apiKey: 'your-api-key',
   });
 
   try {
     const response = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
       messages: [
-        { role: 'user', content: 'Tell me a story about artificial intelligence and empathy' }
+        { role: 'user', content: 'Tell me a story about artificial intelligence and empathy' },
       ],
       stream: true,
-      max_tokens: 500
+      max_tokens: 500,
     });
 
     console.log('📡 Starting stream...\n');
-    
+
     let fullContent = '';
-    
+
     // Process streaming response
     if (Symbol.asyncIterator in response) {
       for await (const chunk of response) {
         if (chunk.choices[0].delta.content) {
           const content = chunk.choices[0].delta.content;
           fullContent += content;
-          
+
           // Print content as it arrives (simulating real-time display)
           console.log(content);
         }
-        
+
         // Check if stream is complete
         if (chunk.choices[0].finish_reason) {
           console.log(`\n✅ Stream completed. Reason: ${chunk.choices[0].finish_reason}`);
@@ -53,9 +53,8 @@ async function basicStreamingExample(): Promise<void> {
         }
       }
     }
-    
-    console.log(`\n📊 Total characters received: ${fullContent.length}`);
 
+    console.log(`\n📊 Total characters received: ${fullContent.length}`);
   } catch (error: any) {
     console.error('❌ Streaming error:', error.message || error);
   } finally {
@@ -68,57 +67,59 @@ async function basicStreamingExample(): Promise<void> {
  */
 async function streamingWithProgressExample(): Promise<void> {
   console.log('\n=== Example 2: Streaming with Progress ===');
-  
+
   const client = new HelpingAI({
-    apiKey: 'your-api-key'
+    apiKey: 'your-api-key',
   });
 
   try {
     const response = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
       messages: [
-        { role: 'user', content: 'Explain the importance of emotional intelligence in leadership' }
+        { role: 'user', content: 'Explain the importance of emotional intelligence in leadership' },
       ],
       stream: true,
-      max_tokens: 300
+      max_tokens: 300,
     });
 
     console.log('📡 Starting stream with progress tracking...\n');
-    
+
     let chunkCount = 0;
     let totalTokens = 0;
     let fullContent = '';
     const startTime = Date.now();
-    
+
     if (Symbol.asyncIterator in response) {
       for await (const chunk of response) {
         chunkCount++;
-        
+
         if (chunk.choices[0].delta.content) {
           const content = chunk.choices[0].delta.content;
           fullContent += content;
-          
+
           // Estimate tokens (rough approximation: 1 token ≈ 4 characters)
           totalTokens += Math.ceil(content.length / 4);
-          
+
           // Show progress every 10 chunks
           if (chunkCount % 10 === 0) {
             const elapsed = (Date.now() - startTime) / 1000;
-            console.log(`📊 Progress: ${chunkCount} chunks, ~${totalTokens} tokens, ${elapsed.toFixed(1)}s`);
+            console.log(
+              `📊 Progress: ${chunkCount} chunks, ~${totalTokens} tokens, ${elapsed.toFixed(1)}s`
+            );
           }
-          
+
           console.log(content);
         }
-        
+
         if (chunk.choices[0].finish_reason) {
           const elapsed = (Date.now() - startTime) / 1000;
           console.log(`\n✅ Stream completed in ${elapsed.toFixed(2)}s`);
           console.log(`📊 Final stats: ${chunkCount} chunks, ~${totalTokens} tokens`);
+          console.log(`📝 Total content length: ${fullContent.length} characters`);
           break;
         }
       }
     }
-
   } catch (error: any) {
     console.error('❌ Streaming error:', error.message || error);
   } finally {
@@ -131,26 +132,30 @@ async function streamingWithProgressExample(): Promise<void> {
  */
 async function streamingWithToolsExample(): Promise<void> {
   console.log('\n=== Example 3: Streaming with Tools ===');
-  
+
   const client = new HelpingAI({
-    apiKey: 'your-api-key'
+    apiKey: 'your-api-key',
   });
 
   try {
     const response = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
       messages: [
-        { role: 'user', content: 'What\'s 15 * 23 and can you search for information about emotional AI?' }
+        {
+          role: 'user',
+          content: "What's 15 * 23 and can you search for information about emotional AI?",
+        },
       ],
       tools: ['code_interpreter', 'web_search'],
-      stream: true
+      stream: true,
     });
 
     console.log('📡 Starting stream with tools...\n');
-    
+
     let fullContent = '';
-    let toolCalls: any[] = [];
-    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const toolCalls: any[] = [];
+
     if (Symbol.asyncIterator in response) {
       for await (const chunk of response) {
         // Handle content delta
@@ -159,24 +164,24 @@ async function streamingWithToolsExample(): Promise<void> {
           fullContent += content;
           console.log(content);
         }
-        
+
         // Handle tool calls delta
         if (chunk.choices[0].delta.tool_calls) {
           console.log('🔧 Tool call detected in stream');
           toolCalls.push(...chunk.choices[0].delta.tool_calls);
         }
-        
+
         if (chunk.choices[0].finish_reason) {
           console.log(`\n✅ Stream completed. Reason: ${chunk.choices[0].finish_reason}`);
-          
+
           if (toolCalls.length > 0) {
             console.log(`🔧 ${toolCalls.length} tool calls were made during streaming`);
           }
+          console.log(`📝 Content received: ${fullContent.length} characters`);
           break;
         }
       }
     }
-
   } catch (error: any) {
     console.error('❌ Streaming error:', error.message || error);
   } finally {
@@ -189,19 +194,17 @@ async function streamingWithToolsExample(): Promise<void> {
  */
 async function streamingErrorHandlingExample(): Promise<void> {
   console.log('\n=== Example 4: Stream Error Handling ===');
-  
+
   const client = new HelpingAI({
     apiKey: 'invalid-key', // Intentionally invalid
-    timeout: 5000 // Short timeout for demonstration
+    timeout: 5000, // Short timeout for demonstration
   });
 
   try {
     const response = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
-      messages: [
-        { role: 'user', content: 'This will fail due to invalid API key' }
-      ],
-      stream: true
+      messages: [{ role: 'user', content: 'This will fail due to invalid API key' }],
+      stream: true,
     });
 
     if (Symbol.asyncIterator in response) {
@@ -209,10 +212,9 @@ async function streamingErrorHandlingExample(): Promise<void> {
         console.log('Received chunk:', chunk);
       }
     }
-
   } catch (error: any) {
     console.log('✅ Caught expected error:');
-    
+
     if (error.name === 'AuthenticationError') {
       console.log('   - Authentication failed (invalid API key)');
     } else if (error.name === 'TimeoutError') {
@@ -222,7 +224,7 @@ async function streamingErrorHandlingExample(): Promise<void> {
     } else {
       console.log(`   - ${error.name}: ${error.message}`);
     }
-    
+
     console.log('💡 Tip: Always handle errors when streaming');
   } finally {
     await client.cleanup();
@@ -234,37 +236,35 @@ async function streamingErrorHandlingExample(): Promise<void> {
  */
 async function streamBufferingExample(): Promise<void> {
   console.log('\n=== Example 5: Stream Buffering ===');
-  
+
   const client = new HelpingAI({
-    apiKey: 'your-api-key'
+    apiKey: 'your-api-key',
   });
 
   try {
     const response = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
-      messages: [
-        { role: 'user', content: 'Write a detailed explanation of machine learning' }
-      ],
+      messages: [{ role: 'user', content: 'Write a detailed explanation of machine learning' }],
       stream: true,
-      max_tokens: 400
+      max_tokens: 400,
     });
 
     console.log('📡 Starting buffered streaming...\n');
-    
+
     let buffer = '';
     let sentenceCount = 0;
-    
+
     if (Symbol.asyncIterator in response) {
       for await (const chunk of response) {
         if (chunk.choices[0].delta.content) {
           buffer += chunk.choices[0].delta.content;
-          
+
           // Process complete sentences
           const sentences = buffer.split(/[.!?]+/);
-          
+
           // Keep the last incomplete sentence in buffer
           buffer = sentences.pop() || '';
-          
+
           // Process complete sentences
           for (const sentence of sentences) {
             if (sentence.trim()) {
@@ -274,20 +274,19 @@ async function streamBufferingExample(): Promise<void> {
             }
           }
         }
-        
+
         if (chunk.choices[0].finish_reason) {
           // Process any remaining content in buffer
           if (buffer.trim()) {
             sentenceCount++;
             console.log(`[Final] ${buffer.trim()}`);
           }
-          
+
           console.log(`\n✅ Processed ${sentenceCount} sentences`);
           break;
         }
       }
     }
-
   } catch (error: any) {
     console.error('❌ Streaming error:', error.message || error);
   } finally {
@@ -300,36 +299,34 @@ async function streamBufferingExample(): Promise<void> {
  */
 async function customStreamProcessingExample(): Promise<void> {
   console.log('\n=== Example 6: Custom Stream Processing ===');
-  
+
   const client = new HelpingAI({
-    apiKey: 'your-api-key'
+    apiKey: 'your-api-key',
   });
 
   try {
     const response = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
-      messages: [
-        { role: 'user', content: 'List 5 benefits of emotional intelligence' }
-      ],
-      stream: true
+      messages: [{ role: 'user', content: 'List 5 benefits of emotional intelligence' }],
+      stream: true,
     });
 
     console.log('📡 Starting custom stream processing...\n');
-    
+
     let fullContent = '';
     let wordCount = 0;
-    let listItems: string[] = [];
-    
+    const listItems: string[] = [];
+
     if (Symbol.asyncIterator in response) {
       for await (const chunk of response) {
         if (chunk.choices[0].delta.content) {
           const content = chunk.choices[0].delta.content;
           fullContent += content;
-          
+
           // Count words
           const words = content.split(/\s+/).filter(word => word.length > 0);
           wordCount += words.length;
-          
+
           // Extract list items (simple pattern matching)
           const lines = fullContent.split('\n');
           for (const line of lines) {
@@ -341,13 +338,13 @@ async function customStreamProcessingExample(): Promise<void> {
               }
             }
           }
-          
+
           // Show real-time word count every 50 words
           if (wordCount > 0 && wordCount % 50 === 0) {
             console.log(`📊 Word count: ${wordCount}`);
           }
         }
-        
+
         if (chunk.choices[0].finish_reason) {
           console.log(`\n✅ Stream completed`);
           console.log(`📊 Final word count: ${wordCount}`);
@@ -356,7 +353,6 @@ async function customStreamProcessingExample(): Promise<void> {
         }
       }
     }
-
   } catch (error: any) {
     console.error('❌ Streaming error:', error.message || error);
   } finally {
@@ -369,9 +365,9 @@ async function customStreamProcessingExample(): Promise<void> {
  */
 async function streamingPerformanceExample(): Promise<void> {
   console.log('\n=== Example 7: Performance Comparison ===');
-  
+
   const client = new HelpingAI({
-    apiKey: 'your-api-key'
+    apiKey: 'your-api-key',
   });
 
   const prompt = 'Explain the role of empathy in artificial intelligence development';
@@ -380,21 +376,21 @@ async function streamingPerformanceExample(): Promise<void> {
     // Non-streaming request
     console.log('🔄 Testing non-streaming...');
     const startNonStream = Date.now();
-    
+
     const nonStreamResponse = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
       messages: [{ role: 'user', content: prompt }],
       stream: false,
-      max_tokens: 200
+      max_tokens: 200,
     });
-    
+
     const nonStreamTime = Date.now() - startNonStream;
     let nonStreamLength = 0;
-    
+
     if ('choices' in nonStreamResponse) {
       nonStreamLength = nonStreamResponse.choices[0].message.content?.length || 0;
     }
-    
+
     console.log(`✅ Non-streaming: ${nonStreamTime}ms, ${nonStreamLength} characters`);
 
     // Streaming request
@@ -402,17 +398,17 @@ async function streamingPerformanceExample(): Promise<void> {
     const startStream = Date.now();
     let firstChunkTime = 0;
     let streamLength = 0;
-    
+
     const streamResponse = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
       messages: [{ role: 'user', content: prompt }],
       stream: true,
-      max_tokens: 200
+      max_tokens: 200,
     });
 
     if (Symbol.asyncIterator in streamResponse) {
       let isFirstChunk = true;
-      
+
       for await (const chunk of streamResponse) {
         if (chunk.choices[0].delta.content) {
           if (isFirstChunk) {
@@ -421,22 +417,23 @@ async function streamingPerformanceExample(): Promise<void> {
           }
           streamLength += chunk.choices[0].delta.content.length;
         }
-        
+
         if (chunk.choices[0].finish_reason) {
           break;
         }
       }
     }
-    
+
     const totalStreamTime = Date.now() - startStream;
-    
-    console.log(`✅ Streaming: ${totalStreamTime}ms total, ${firstChunkTime}ms to first chunk, ${streamLength} characters`);
-    
+
+    console.log(
+      `✅ Streaming: ${totalStreamTime}ms total, ${firstChunkTime}ms to first chunk, ${streamLength} characters`
+    );
+
     console.log('\n📊 Performance Analysis:');
     console.log(`   - Time to first content: ${firstChunkTime}ms (streaming advantage)`);
     console.log(`   - Total time difference: ${totalStreamTime - nonStreamTime}ms`);
     console.log(`   - Streaming provides faster perceived response time`);
-
   } catch (error: any) {
     console.error('❌ Performance test error:', error.message || error);
   } finally {
@@ -449,37 +446,37 @@ async function streamingPerformanceExample(): Promise<void> {
  */
 async function crossPlatformStreamingExample(): Promise<void> {
   console.log('\n=== Example 8: Cross-Platform Streaming ===');
-  
+
   const client = new HelpingAI({
-    apiKey: 'your-api-key'
+    apiKey: 'your-api-key',
   });
 
   try {
     console.log('🌐 Platform detection:');
-    
+
     // Detect environment
     const isBrowser = typeof window !== 'undefined';
     const isNode = typeof globalThis !== 'undefined' && (globalThis as any).process?.versions?.node;
-    
+
     console.log(`   - Browser: ${isBrowser}`);
     console.log(`   - Node.js: ${isNode}`);
-    
+
     const response = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
       messages: [
-        { role: 'user', content: 'Explain how streaming works differently in browsers vs Node.js' }
+        { role: 'user', content: 'Explain how streaming works differently in browsers vs Node.js' },
       ],
       stream: true,
-      max_tokens: 300
+      max_tokens: 300,
     });
 
     console.log('📡 Starting cross-platform streaming...\n');
-    
+
     if (Symbol.asyncIterator in response) {
       for await (const chunk of response) {
         if (chunk.choices[0].delta.content) {
           const content = chunk.choices[0].delta.content;
-          
+
           // Platform-specific output handling
           if (isBrowser) {
             // In browser, we might update DOM elements
@@ -489,14 +486,13 @@ async function crossPlatformStreamingExample(): Promise<void> {
             console.log(`[Node.js] ${content}`);
           }
         }
-        
+
         if (chunk.choices[0].finish_reason) {
           console.log('\n✅ Cross-platform streaming completed');
           break;
         }
       }
     }
-
   } catch (error: any) {
     console.error('❌ Cross-platform streaming error:', error.message || error);
   } finally {
@@ -526,7 +522,6 @@ async function main(): Promise<void> {
     console.log('   - Always handle errors in streaming scenarios');
     console.log('   - Buffer content for better user experience');
     console.log('   - Consider platform differences (Browser vs Node.js)');
-
   } catch (error) {
     console.error('Error in main:', error);
   }
@@ -549,5 +544,5 @@ export {
   streamBufferingExample,
   customStreamProcessingExample,
   streamingPerformanceExample,
-  crossPlatformStreamingExample
+  crossPlatformStreamingExample,
 };

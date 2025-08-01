@@ -47,6 +47,7 @@ export class CodeInterpreterTool extends BuiltinToolBase {
    * @param kwargs - Parameters containing code to execute
    * @returns Execution result including stdout, stderr, and generated images
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async execute(kwargs: Record<string, any>): Promise<string> {
     this.validateParameters(kwargs);
 

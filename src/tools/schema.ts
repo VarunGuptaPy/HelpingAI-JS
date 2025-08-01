@@ -9,22 +9,21 @@ export interface ParameterInfo {
   type: string;
   description?: string;
   required: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   default?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   enum?: any[];
 }
 
 /**
  * Generate JSON schema from function signature and JSDoc comments
  */
-export function generateToolSchema(
-  name: string,
-  fn: Function,
-  description?: string
-): Tool {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function generateToolSchema(name: string, fn: Function, description?: string): Tool {
   const functionString = fn.toString();
   const parameters = extractParameters(functionString);
   const docInfo = parseJSDoc(functionString);
-  
+
   const schema: Tool = {
     type: 'function',
     function: {
@@ -33,18 +32,18 @@ export function generateToolSchema(
       parameters: {
         type: 'object',
         properties: {},
-        required: []
-      }
-    }
+        required: [],
+      },
+    },
   };
 
   // Build properties and required array
   parameters.forEach(param => {
     const paramDoc = docInfo.params[param.name];
-    
+
     schema.function.parameters.properties[param.name] = {
       type: mapTypeToJsonSchema(param.type),
-      description: paramDoc?.description || `Parameter ${param.name}`
+      description: paramDoc?.description || `Parameter ${param.name}`,
     };
 
     if (param.enum) {
@@ -64,7 +63,7 @@ export function generateToolSchema(
  */
 function extractParameters(functionString: string): ParameterInfo[] {
   const parameters: ParameterInfo[] = [];
-  
+
   // Simple regex to extract parameters - this is a basic implementation
   // In a real implementation, you'd want to use a proper TypeScript parser
   const paramMatch = functionString.match(/\(([^)]*)\)/);
@@ -74,7 +73,7 @@ function extractParameters(functionString: string): ParameterInfo[] {
   if (!paramString.trim()) return parameters;
 
   const params = paramString.split(',').map(p => p.trim());
-  
+
   params.forEach(param => {
     const info = parseParameter(param);
     if (info) {
@@ -94,18 +93,19 @@ function parseParameter(param: string): ParameterInfo | null {
   if (!match) return null;
 
   const [, name, typeAnnotation, defaultValue] = match;
-  
+
   return {
     name: name.trim(),
     type: typeAnnotation?.trim() || 'any',
     required: !defaultValue,
-    default: defaultValue ? parseDefaultValue(defaultValue.trim()) : undefined
+    default: defaultValue ? parseDefaultValue(defaultValue.trim()) : undefined,
   };
 }
 
 /**
  * Parse default value
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseDefaultValue(value: string): any {
   if (value === 'undefined' || value === 'null') return null;
   if (value === 'true') return true;
@@ -122,13 +122,13 @@ function parseDefaultValue(value: string): any {
  */
 function mapTypeToJsonSchema(type: string): string {
   const cleanType = type.replace(/\s+/g, '').toLowerCase();
-  
+
   if (cleanType.includes('string')) return 'string';
   if (cleanType.includes('number')) return 'number';
   if (cleanType.includes('boolean')) return 'boolean';
   if (cleanType.includes('array') || cleanType.includes('[]')) return 'array';
   if (cleanType.includes('object') || cleanType.includes('{}')) return 'object';
-  
+
   return 'string'; // Default fallback
 }
 
@@ -141,7 +141,7 @@ function parseJSDoc(functionString: string): {
 } {
   const result = {
     description: '',
-    params: {} as Record<string, { description: string; type?: string }>
+    params: {} as Record<string, { description: string; type?: string }>,
   };
 
   // Extract JSDoc comment
@@ -149,12 +149,13 @@ function parseJSDoc(functionString: string): {
   if (!jsdocMatch) return result;
 
   const jsdocContent = jsdocMatch[1];
-  const lines = jsdocContent.split('\n').map(line => 
-    line.replace(/^\s*\*\s?/, '').trim()
-  ).filter(line => line);
+  const lines = jsdocContent
+    .split('\n')
+    .map(line => line.replace(/^\s*\*\s?/, '').trim())
+    .filter(line => line);
 
   let currentSection = 'description';
-  let descriptionLines: string[] = [];
+  const descriptionLines: string[] = [];
 
   lines.forEach(line => {
     if (line.startsWith('@param')) {
@@ -180,11 +181,12 @@ function parseJSDoc(functionString: string): {
  */
 export function validateToolArguments(
   tool: Tool,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   args: Record<string, any>
 ): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
   const schema = tool.function.parameters;
-  
+
   // Check required parameters
   if (schema.required) {
     schema.required.forEach((param: string) => {
@@ -225,6 +227,6 @@ export function validateToolArguments(
 
   return {
     valid: errors.length === 0,
-    errors
+    errors,
   };
 }

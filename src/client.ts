@@ -3,7 +3,9 @@
  */
 
 // Simplified implementation - dependencies will be available at runtime
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const fetch: any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const EventSource: any;
 import {
   HelpingAIConfig,
@@ -67,6 +69,7 @@ export class HelpingAI {
   /**
    * Direct tool execution method
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public async call(toolName: string, args: Record<string, any>): Promise<any> {
     try {
       // Check if it's an MCP tool
@@ -117,11 +120,13 @@ export class HelpingAI {
   /**
    * Process tools configuration
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async processTools(tools?: ToolDefinition[]): Promise<any[] | undefined> {
     if (!tools || tools.length === 0) {
       return undefined;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const processedTools: any[] = [];
 
     for (const tool of tools) {
@@ -180,6 +185,7 @@ export class HelpingAI {
       const chunks: ChatCompletionChunk[] = [];
       let resolved = false;
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       eventSource.onmessage = (event: any) => {
         if (event.data === '[DONE]') {
           eventSource.close();
@@ -198,6 +204,7 @@ export class HelpingAI {
         }
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       eventSource.onerror = (_error: any) => {
         eventSource.close();
         if (!resolved) {
@@ -247,6 +254,7 @@ export class HelpingAI {
   /**
    * Make HTTP request
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async makeRequest(endpoint: string, options: RequestInit): Promise<any> {
     const url = `${this.config.baseURL}${endpoint}`;
     const headers = this.getHeaders();

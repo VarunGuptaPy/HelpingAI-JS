@@ -7,7 +7,7 @@ export interface MCPServerConfig {
   command?: string;
   args?: string[];
   env?: Record<string, string>;
-  
+
   // HTTP-based server
   url?: string;
   headers?: Record<string, string>;
@@ -22,6 +22,7 @@ export interface MCPServersConfig {
 export interface MCPTool {
   name: string;
   description: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   inputSchema: Record<string, any>;
 }
 
@@ -59,6 +60,7 @@ export interface MCPInitializeResult {
 
 export interface MCPToolCall {
   name: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   arguments: Record<string, any>;
 }
 

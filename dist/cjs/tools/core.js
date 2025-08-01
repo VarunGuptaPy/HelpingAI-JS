@@ -122,9 +122,9 @@ function ensureToolFormat(tool) {
                 parameters: {
                     type: 'object',
                     properties: {},
-                    required: []
-                }
-            }
+                    required: [],
+                },
+            },
         };
     }
     if (tool.type === 'function' && tool.function) {
@@ -173,9 +173,9 @@ function createTool(name, description, parameters, fn) {
             parameters: {
                 type: 'object',
                 properties: parameters,
-                required: Object.keys(parameters).filter(key => parameters[key].required !== false)
-            }
-        }
+                required: Object.keys(parameters).filter(key => parameters[key].required !== false),
+            },
+        },
     };
     // Register the tool
     globalRegistry.register(name, tool, fn);

@@ -35,6 +35,7 @@ export interface Tool {
   function: {
     name: string;
     description: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parameters: Record<string, any>;
   };
 }
@@ -121,13 +122,17 @@ export interface ModelList {
 
 // Tool function decorator types
 export interface ToolFunction {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (...args: any[]): any;
   _toolSchema?: Tool;
 }
 
 export interface ToolRegistry {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   register(name: string, tool: Tool, fn: Function): void;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   get(name: string): { tool: Tool; fn: Function } | undefined;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   list(): Array<{ name: string; tool: Tool; fn: Function }>;
   clear(): void;
   has(name: string): boolean;

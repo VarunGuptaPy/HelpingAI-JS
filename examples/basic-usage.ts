@@ -1,6 +1,6 @@
 /**
  * Basic Usage Examples for HelpingAI JavaScript SDK
- * 
+ *
  * This example demonstrates the fundamental features of the HelpingAI SDK:
  * - Client initialization
  * - Simple chat completions
@@ -16,10 +16,10 @@ import { HelpingAI } from '../src';
  */
 async function basicChatCompletion(): Promise<void> {
   console.log('=== Example 1: Basic Chat Completion ===');
-  
+
   // Initialize the client
   const client = new HelpingAI({
-    apiKey: 'your-api-key' // Replace with your actual API key
+    apiKey: 'your-api-key', // Replace with your actual API key
   });
 
   try {
@@ -27,14 +27,14 @@ async function basicChatCompletion(): Promise<void> {
       model: 'Dhanishtha-2.0-preview',
       messages: [
         { role: 'system', content: 'You are an expert in emotional intelligence.' },
-        { role: 'user', content: 'What makes a good leader?' }
-      ]
+        { role: 'user', content: 'What makes a good leader?' },
+      ],
     });
 
     if ('choices' in response) {
       console.log('Response:', response.choices[0].message.content);
     }
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Error:', error.message || error);
   } finally {
@@ -47,30 +47,28 @@ async function basicChatCompletion(): Promise<void> {
  */
 async function advancedChatCompletion(): Promise<void> {
   console.log('\n=== Example 2: Advanced Parameters ===');
-  
+
   const client = new HelpingAI({
-    apiKey: 'your-api-key'
+    apiKey: 'your-api-key',
   });
 
   try {
     const response = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
-      messages: [
-        { role: 'user', content: 'Write a story about empathy' }
-      ],
-      temperature: 0.7,        // Controls randomness (0-1)
-      max_tokens: 500,        // Maximum length of response
-      top_p: 0.9,            // Nucleus sampling parameter
+      messages: [{ role: 'user', content: 'Write a story about empathy' }],
+      temperature: 0.7, // Controls randomness (0-1)
+      max_tokens: 500, // Maximum length of response
+      top_p: 0.9, // Nucleus sampling parameter
       frequency_penalty: 0.3, // Reduces repetition
-      presence_penalty: 0.3,  // Encourages new topics
-      hide_think: true       // Filter out reasoning blocks
+      presence_penalty: 0.3, // Encourages new topics
+      hide_think: true, // Filter out reasoning blocks
     });
 
     if ('choices' in response) {
       console.log('Story:', response.choices[0].message.content);
       console.log('\nUsage:', response.usage);
     }
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Error:', error.message || error);
   } finally {
@@ -83,9 +81,9 @@ async function advancedChatCompletion(): Promise<void> {
  */
 async function conversationExample(): Promise<void> {
   console.log('\n=== Example 3: Conversation ===');
-  
+
   const client = new HelpingAI({
-    apiKey: 'your-api-key'
+    apiKey: 'your-api-key',
   });
 
   // Build a conversation
@@ -94,37 +92,36 @@ async function conversationExample(): Promise<void> {
     content: string;
   }> = [
     { role: 'system', content: 'You are a helpful assistant with emotional intelligence.' },
-    { role: 'user', content: 'I\'m feeling stressed about work.' },
+    { role: 'user', content: "I'm feeling stressed about work." },
   ];
 
   try {
     // First response
     const response1 = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
-      messages
+      messages,
     });
 
     if ('choices' in response1) {
       const assistantMessage = response1.choices[0].message.content;
       console.log('Assistant:', assistantMessage);
-      
+
       // Add assistant's response to conversation
       messages.push({ role: 'assistant', content: assistantMessage || '' });
-      
+
       // User follow-up
       messages.push({ role: 'user', content: 'What specific techniques can help?' });
-      
+
       // Second response
       const response2 = await client.chat.completions.create({
         model: 'Dhanishtha-2.0-preview',
-        messages
+        messages,
       });
 
       if ('choices' in response2) {
         console.log('Assistant:', response2.choices[0].message.content);
       }
     }
-
   } catch (error: any) {
     console.error('Error:', error.message || error);
   } finally {
@@ -137,9 +134,9 @@ async function conversationExample(): Promise<void> {
  */
 async function differentModelsExample(): Promise<void> {
   console.log('\n=== Example 4: Different Models ===');
-  
+
   const client = new HelpingAI({
-    apiKey: 'your-api-key'
+    apiKey: 'your-api-key',
   });
 
   const prompt = 'Explain the concept of emotional intelligence in simple terms.';
@@ -150,7 +147,7 @@ async function differentModelsExample(): Promise<void> {
     const response1 = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
       messages: [{ role: 'user', content: prompt }],
-      hide_think: false // Show reasoning process
+      hide_think: false, // Show reasoning process
     });
 
     if ('choices' in response1) {
@@ -161,13 +158,12 @@ async function differentModelsExample(): Promise<void> {
     console.log('\nUsing Dhanishtha-2.0-preview-mini:');
     const response2 = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview-mini',
-      messages: [{ role: 'user', content: prompt }]
+      messages: [{ role: 'user', content: prompt }],
     });
 
     if ('choices' in response2) {
       console.log('Response:', response2.choices[0].message.content);
     }
-
   } catch (error: any) {
     console.error('Error:', error.message || error);
   } finally {
@@ -180,30 +176,28 @@ async function differentModelsExample(): Promise<void> {
  */
 async function clientConfigurationExample(): Promise<void> {
   console.log('\n=== Example 5: Client Configuration ===');
-  
+
   // Advanced client configuration
   const client = new HelpingAI({
     apiKey: 'your-api-key',
-    baseURL: 'https://api.helpingai.co/v1',  // Custom base URL
-    timeout: 30000,                          // Request timeout (30 seconds)
-    organization: 'your-org-id',             // Organization ID
-    defaultHeaders: {                        // Custom headers
-      'X-Custom-Header': 'custom-value'
-    }
+    baseURL: 'https://api.helpingai.co/v1', // Custom base URL
+    timeout: 30000, // Request timeout (30 seconds)
+    organization: 'your-org-id', // Organization ID
+    defaultHeaders: {
+      // Custom headers
+      'X-Custom-Header': 'custom-value',
+    },
   });
 
   try {
     const response = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
-      messages: [
-        { role: 'user', content: 'Hello, how are you?' }
-      ]
+      messages: [{ role: 'user', content: 'Hello, how are you?' }],
     });
 
     if ('choices' in response) {
       console.log('Response:', response.choices[0].message.content);
     }
-
   } catch (error: any) {
     console.error('Error:', error.message || error);
   } finally {
@@ -216,19 +210,18 @@ async function clientConfigurationExample(): Promise<void> {
  */
 async function errorHandlingExample(): Promise<void> {
   console.log('\n=== Example 6: Error Handling ===');
-  
+
   const client = new HelpingAI({
-    apiKey: 'invalid-api-key' // Intentionally invalid for demonstration
+    apiKey: 'invalid-api-key', // Intentionally invalid for demonstration
   });
 
   try {
-    const response = await client.chat.completions.create({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const _response = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
-      messages: [
-        { role: 'user', content: 'This will fail due to invalid API key' }
-      ]
+      messages: [{ role: 'user', content: 'This will fail due to invalid API key' }],
     });
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     // Handle different types of errors
     if (error.name === 'AuthenticationError') {
@@ -253,9 +246,9 @@ async function errorHandlingExample(): Promise<void> {
  */
 async function modelsAPIExample(): Promise<void> {
   console.log('\n=== Example 7: Models API ===');
-  
+
   const client = new HelpingAI({
-    apiKey: 'your-api-key'
+    apiKey: 'your-api-key',
   });
 
   try {
@@ -272,7 +265,6 @@ async function modelsAPIExample(): Promise<void> {
     console.log(`Name: ${model.name || model.id}`);
     console.log(`Owner: ${model.owned_by}`);
     console.log(`Created: ${new Date(model.created * 1000).toISOString()}`);
-
   } catch (error: any) {
     console.error('Error:', error.message || error);
   } finally {
@@ -285,23 +277,20 @@ async function modelsAPIExample(): Promise<void> {
  */
 async function environmentConfigExample(): Promise<void> {
   console.log('\n=== Example 8: Environment Configuration ===');
-  
+
   // The client will automatically use HAI_API_KEY environment variable if available
   const client = new HelpingAI(); // No explicit API key needed if env var is set
 
   try {
     const response = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
-      messages: [
-        { role: 'user', content: 'Test with environment configuration' }
-      ]
+      messages: [{ role: 'user', content: 'Test with environment configuration' }],
     });
 
     if ('choices' in response) {
       console.log('✅ Environment configuration working');
       console.log('Response:', response.choices[0].message.content);
     }
-
   } catch (error: any) {
     console.log('❌ Environment configuration failed:', error.message);
     console.log('💡 Set HAI_API_KEY environment variable or pass apiKey in constructor');
@@ -315,17 +304,15 @@ async function environmentConfigExample(): Promise<void> {
  */
 async function responseInspectionExample(): Promise<void> {
   console.log('\n=== Example 9: Response Inspection ===');
-  
+
   const client = new HelpingAI({
-    apiKey: 'your-api-key'
+    apiKey: 'your-api-key',
   });
 
   try {
     const response = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
-      messages: [
-        { role: 'user', content: 'Tell me about artificial intelligence' }
-      ]
+      messages: [{ role: 'user', content: 'Tell me about artificial intelligence' }],
     });
 
     if ('choices' in response) {
@@ -335,17 +322,16 @@ async function responseInspectionExample(): Promise<void> {
       console.log(`- Created: ${new Date(response.created * 1000).toISOString()}`);
       console.log(`- Choices: ${response.choices.length}`);
       console.log(`- Finish Reason: ${response.choices[0].finish_reason}`);
-      
+
       if (response.usage) {
         console.log('Token Usage:');
         console.log(`- Prompt tokens: ${response.usage.prompt_tokens}`);
         console.log(`- Completion tokens: ${response.usage.completion_tokens}`);
         console.log(`- Total tokens: ${response.usage.total_tokens}`);
       }
-      
+
       console.log('\nContent:', response.choices[0].message.content);
     }
-
   } catch (error: any) {
     console.error('Error:', error.message || error);
   } finally {
@@ -375,7 +361,6 @@ async function main(): Promise<void> {
     console.log('   - Check out streaming.ts for streaming examples');
     console.log('   - See tool-calling.ts for tool usage');
     console.log('   - Explore mcp-integration.ts for MCP servers');
-
   } catch (error) {
     console.error('Error in main:', error);
   }
@@ -399,5 +384,5 @@ export {
   errorHandlingExample,
   modelsAPIExample,
   environmentConfigExample,
-  responseInspectionExample
+  responseInspectionExample,
 };

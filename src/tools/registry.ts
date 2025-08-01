@@ -7,6 +7,7 @@ import { ToolRegistrationError } from '../errors';
 
 export interface ToolEntry {
   tool: Tool;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   fn: Function;
 }
 
@@ -16,11 +17,12 @@ export class ToolRegistry {
   /**
    * Register a tool with its function
    */
+  // eslint-disable-next-line @typescript-eslint/ban-types
   register(name: string, tool: Tool, fn: Function): void {
     if (this.tools.has(name)) {
       throw new ToolRegistrationError(`Tool '${name}' is already registered`);
     }
-    
+
     this.tools.set(name, { tool, fn });
   }
 
@@ -41,11 +43,12 @@ export class ToolRegistry {
   /**
    * List all registered tools
    */
+  // eslint-disable-next-line @typescript-eslint/ban-types
   list(): Array<{ name: string; tool: Tool; fn: Function }> {
     return Array.from(this.tools.entries()).map(([name, entry]) => ({
       name,
       tool: entry.tool,
-      fn: entry.fn
+      fn: entry.fn,
     }));
   }
 
@@ -81,10 +84,10 @@ export class ToolRegistry {
    * Get tools as OpenAI format array
    */
   getToolsArray(names?: string[]): Tool[] {
-    const entries = names 
-      ? names.map(name => this.tools.get(name)).filter(Boolean) as ToolEntry[]
+    const entries = names
+      ? (names.map(name => this.tools.get(name)).filter(Boolean) as ToolEntry[])
       : Array.from(this.tools.values());
-    
+
     return entries.map(entry => entry.tool);
   }
 }

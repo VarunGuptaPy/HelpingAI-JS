@@ -26,7 +26,7 @@ export class MCPClient {
         config,
         initialized: false,
         tools: [],
-        resources: []
+        resources: [],
       };
 
       // Initialize connection based on type
@@ -66,7 +66,7 @@ export class MCPClient {
     // This would use the actual MCP SDK when available
     // For now, we'll create a mock implementation
     console.warn(`MCP stdio connection to ${connection.serverName} would be initialized here`);
-    
+
     // Mock initialization
     connection.initialized = true;
     connection.tools = [
@@ -76,9 +76,9 @@ export class MCPClient {
         inputSchema: {
           type: 'object',
           properties: {},
-          required: []
-        }
-      }
+          required: [],
+        },
+      },
     ];
   }
 
@@ -88,7 +88,7 @@ export class MCPClient {
   private async initializeHttpConnection(connection: MCPConnection): Promise<void> {
     // This would use the actual MCP SDK when available
     console.warn(`MCP HTTP connection to ${connection.serverName} would be initialized here`);
-    
+
     // Mock initialization
     connection.initialized = true;
     connection.tools = [
@@ -98,9 +98,9 @@ export class MCPClient {
         inputSchema: {
           type: 'object',
           properties: {},
-          required: []
-        }
-      }
+          required: [],
+        },
+      },
     ];
   }
 
@@ -109,23 +109,24 @@ export class MCPClient {
    */
   getAvailableTools(): MCPTool[] {
     const tools: MCPTool[] = [];
-    
+
     for (const connection of this.connections.values()) {
       if (connection.initialized) {
         tools.push(...connection.tools);
       }
     }
-    
+
     return tools;
   }
 
   /**
    * Execute a tool call on an MCP server
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async callTool(toolName: string, args: Record<string, any>): Promise<MCPToolResult> {
     // Find which server has this tool
     let targetConnection: MCPConnection | undefined;
-    
+
     for (const connection of this.connections.values()) {
       if (connection.tools.some(tool => tool.name === toolName)) {
         targetConnection = connection;
@@ -144,15 +145,15 @@ export class MCPClient {
     try {
       // This would use the actual MCP SDK to call the tool
       console.log(`Calling MCP tool ${toolName} with args:`, args);
-      
+
       // Mock response
       return {
         content: [
           {
             type: 'text',
-            text: `Mock response from MCP tool ${toolName}`
-          }
-        ]
+            text: `Mock response from MCP tool ${toolName}`,
+          },
+        ],
       };
     } catch (error) {
       throw new MCPError(
@@ -188,7 +189,7 @@ export class MCPClient {
    */
   async disconnectAll(): Promise<void> {
     const serverNames = Array.from(this.connections.keys());
-    
+
     for (const serverName of serverNames) {
       await this.disconnect(serverName);
     }
@@ -199,11 +200,11 @@ export class MCPClient {
    */
   getConnectionStatus(): Record<string, boolean> {
     const status: Record<string, boolean> = {};
-    
+
     for (const [serverName, connection] of this.connections) {
       status[serverName] = connection.initialized;
     }
-    
+
     return status;
   }
 

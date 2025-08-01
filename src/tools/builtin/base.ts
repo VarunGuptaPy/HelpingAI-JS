@@ -14,11 +14,13 @@ import { ToolExecutionError } from '../../errors';
 export interface BuiltinToolConfig {
   workDir?: string;
   timeout?: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
 export interface ToolParameters {
   type: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   properties: Record<string, any>;
   required?: string[];
 }
@@ -75,6 +77,7 @@ export abstract class BuiltinToolBase {
    * @returns Tool execution result as string
    * @throws ToolExecutionError if execution fails
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   abstract execute(kwargs: Record<string, any>): Promise<string>;
 
   /**
@@ -82,7 +85,9 @@ export abstract class BuiltinToolBase {
    *
    * @returns Function that can be executed
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   toFunction(): (kwargs: Record<string, any>) => Promise<string> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return async (kwargs: Record<string, any>): Promise<string> => {
       try {
         return await this.execute(kwargs);
@@ -115,6 +120,7 @@ export abstract class BuiltinToolBase {
    * @param params - Parameters to validate
    * @throws Error if validation fails
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected validateParameters(params: Record<string, any>): void {
     // Check required parameters
     const requiredParams = this.parameters.required || [];

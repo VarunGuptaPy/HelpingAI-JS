@@ -54,9 +54,9 @@ class MCPManager {
                 parameters: mcpTool.inputSchema || {
                     type: 'object',
                     properties: {},
-                    required: []
-                }
-            }
+                    required: [],
+                },
+            },
         };
     }
     /**
@@ -172,7 +172,7 @@ class MCPManager {
         });
         return {
             valid: errors.length === 0,
-            errors
+            errors,
         };
     }
 }

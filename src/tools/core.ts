@@ -12,7 +12,7 @@ const globalRegistry = new ToolRegistry();
 
 /**
  * Decorator to convert a function into an AI-callable tool
- * 
+ *
  * @example
  * ```typescript
  * @tools
@@ -22,29 +22,30 @@ const globalRegistry = new ToolRegistry();
  * }
  * ```
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export function tools<T extends Function>(target: T): T & ToolFunction {
   const functionName = target.name;
-  
+
   if (!functionName) {
     throw new ToolRegistrationError('Tool functions must have a name');
   }
 
   // Generate tool schema from function signature
   const toolSchema = generateToolSchema(functionName, target);
-  
+
   // Register the tool
   globalRegistry.register(functionName, toolSchema, target);
-  
+
   // Add schema to function for inspection
   const decoratedFunction = target as T & ToolFunction;
   decoratedFunction._toolSchema = toolSchema;
-  
+
   return decoratedFunction;
 }
 
 /**
  * Get tools from the registry
- * 
+ *
  * @param names - Optional array of tool names to retrieve. If not provided, returns all tools
  * @returns Array of OpenAI-format tool definitions
  */
@@ -68,11 +69,12 @@ export function clearRegistry(): void {
 
 /**
  * Execute a registered tool by name
- * 
+ *
  * @param name - Tool name
  * @param args - Tool arguments
  * @returns Tool execution result
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function executeTool(name: string, args: Record<string, any>): Promise<any> {
   const entry = globalRegistry.get(name);
   if (!entry) {
@@ -84,13 +86,15 @@ export async function executeTool(name: string, args: Record<string, any>): Prom
     const result = await entry.fn(args);
     return result;
   } catch (error) {
-    throw new Error(`Tool execution failed: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `Tool execution failed: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 }
 
 /**
  * Merge multiple tool lists together
- * 
+ *
  * @param toolLists - Arrays of tools to merge
  * @returns Combined array of tools
  */
@@ -100,7 +104,7 @@ export function mergeToolLists(...toolLists: (Tool[] | undefined)[]): Tool[] {
 
   toolLists.forEach(list => {
     if (!list) return;
-    
+
     list.forEach(tool => {
       const name = tool.function.name;
       if (!seen.has(name)) {
@@ -115,10 +119,11 @@ export function mergeToolLists(...toolLists: (Tool[] | undefined)[]): Tool[] {
 
 /**
  * Ensure tool is in proper OpenAI format
- * 
+ *
  * @param tool - Tool definition
  * @returns Normalized tool definition
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function ensureToolFormat(tool: any): Tool {
   if (typeof tool === 'string') {
     // Handle built-in tool names
@@ -130,9 +135,9 @@ export function ensureToolFormat(tool: any): Tool {
         parameters: {
           type: 'object',
           properties: {},
-          required: []
-        }
-      }
+          required: [],
+        },
+      },
     };
   }
 
@@ -145,7 +150,7 @@ export function ensureToolFormat(tool: any): Tool {
 
 /**
  * Validate tool definition
- * 
+ *
  * @param tool - Tool to validate
  * @returns True if valid, throws error if invalid
  */
@@ -171,7 +176,7 @@ export function validateTool(tool: Tool): boolean {
 
 /**
  * Create a tool definition manually
- * 
+ *
  * @param name - Tool name
  * @param description - Tool description
  * @param parameters - Tool parameters schema
@@ -181,7 +186,9 @@ export function validateTool(tool: Tool): boolean {
 export function createTool(
   name: string,
   description: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   parameters: Record<string, any>,
+  // eslint-disable-next-line @typescript-eslint/ban-types
   fn: Function
 ): Tool {
   const tool: Tool = {
@@ -192,15 +199,13 @@ export function createTool(
       parameters: {
         type: 'object',
         properties: parameters,
-        required: Object.keys(parameters).filter(key => 
-          parameters[key].required !== false
-        )
-      }
-    }
+        required: Object.keys(parameters).filter(key => parameters[key].required !== false),
+      },
+    },
   };
 
   // Register the tool
   globalRegistry.register(name, tool, fn);
-  
+
   return tool;
 }

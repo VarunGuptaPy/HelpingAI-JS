@@ -72,11 +72,7 @@ export class RateLimitError extends HelpingAIError {
 }
 
 export class InvalidRequestError extends HelpingAIError {
-  constructor(
-    message: string,
-    param?: string,
-    code?: string
-  ) {
+  constructor(message: string, param?: string, code?: string) {
     super(message, 'InvalidRequestError', 400, undefined, code, param);
     this.name = 'InvalidRequestError';
   }
@@ -142,6 +138,7 @@ export class MCPError extends HelpingAIError {
  */
 export function parseErrorResponse(
   status: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any,
   headers?: Record<string, string>
 ): HelpingAIError {
@@ -158,11 +155,12 @@ export function parseErrorResponse(
       return new PermissionDeniedError(message);
     case 404:
       return new NotFoundError(message);
-    case 429:
-      const retryAfter = headers?.['retry-after'] 
-        ? parseInt(headers['retry-after'], 10) 
+    case 429: {
+      const retryAfter = headers?.['retry-after']
+        ? parseInt(headers['retry-after'], 10)
         : undefined;
       return new RateLimitError(message, retryAfter);
+    }
     case 500:
     case 502:
     case 503:

@@ -64,6 +64,7 @@ export class WebSearchTool extends BuiltinToolBase {
    * @param kwargs - Parameters containing query and optional max_results
    * @returns Formatted search results with titles, snippets, links, and sources
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async execute(kwargs: Record<string, any>): Promise<string> {
     this.validateParameters(kwargs);
 

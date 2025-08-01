@@ -19,16 +19,16 @@ function generateToolSchema(name, fn, description) {
             parameters: {
                 type: 'object',
                 properties: {},
-                required: []
-            }
-        }
+                required: [],
+            },
+        },
     };
     // Build properties and required array
     parameters.forEach(param => {
         const paramDoc = docInfo.params[param.name];
         schema.function.parameters.properties[param.name] = {
             type: mapTypeToJsonSchema(param.type),
-            description: paramDoc?.description || `Parameter ${param.name}`
+            description: paramDoc?.description || `Parameter ${param.name}`,
         };
         if (param.enum) {
             schema.function.parameters.properties[param.name].enum = param.enum;
@@ -75,7 +75,7 @@ function parseParameter(param) {
         name: name.trim(),
         type: typeAnnotation?.trim() || 'any',
         required: !defaultValue,
-        default: defaultValue ? parseDefaultValue(defaultValue.trim()) : undefined
+        default: defaultValue ? parseDefaultValue(defaultValue.trim()) : undefined,
     };
 }
 /**
@@ -121,16 +121,19 @@ function mapTypeToJsonSchema(type) {
 function parseJSDoc(functionString) {
     const result = {
         description: '',
-        params: {}
+        params: {},
     };
     // Extract JSDoc comment
     const jsdocMatch = functionString.match(/\/\*\*([\s\S]*?)\*\//);
     if (!jsdocMatch)
         return result;
     const jsdocContent = jsdocMatch[1];
-    const lines = jsdocContent.split('\n').map(line => line.replace(/^\s*\*\s?/, '').trim()).filter(line => line);
+    const lines = jsdocContent
+        .split('\n')
+        .map(line => line.replace(/^\s*\*\s?/, '').trim())
+        .filter(line => line);
     let currentSection = 'description';
-    let descriptionLines = [];
+    const descriptionLines = [];
     lines.forEach(line => {
         if (line.startsWith('@param')) {
             currentSection = 'param';
@@ -195,7 +198,7 @@ function validateToolArguments(tool, args) {
     });
     return {
         valid: errors.length === 0,
-        errors
+        errors,
     };
 }
 exports.validateToolArguments = validateToolArguments;

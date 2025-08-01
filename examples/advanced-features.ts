@@ -71,7 +71,9 @@ print(f"Results match: {result == math_result}")
  */
 
 // Define custom tools using the @tools decorator
-const weatherTool = tools(function getWeather(
+// Example tool definition - not used in this demo but shows the pattern
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _weatherTool = tools(function getWeather(
   city: string,
   units: 'celsius' | 'fahrenheit' = 'celsius'
 ): string {
@@ -86,7 +88,8 @@ const weatherTool = tools(function getWeather(
   return `Weather in ${city}: ${temp}, partly cloudy with light winds`;
 });
 
-const calculatorTool = tools(function calculate(expression: string): {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _calculatorTool = tools(function calculate(expression: string): {
   result: number;
   expression: string;
 } {
@@ -104,7 +107,8 @@ const calculatorTool = tools(function calculate(expression: string): {
   }
 });
 
-const taskManagerTool = tools(function createTask(
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _taskManagerTool = tools(function createTask(
   title: string,
   priority: 'low' | 'medium' | 'high' = 'medium',
   dueDate?: string,
@@ -233,7 +237,8 @@ async function complexWorkflowExample(): Promise<void> {
   });
 
   // Define a workflow tool
-  const workflowTool = tools(function analyzeData(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _workflowTool = tools(function analyzeData(
     dataset: string,
     analysisType: 'statistical' | 'trend' | 'correlation' = 'statistical'
   ): { analysis: string; insights: string[]; recommendations: string[] } {
@@ -309,7 +314,8 @@ async function typeSafeToolsExample(): Promise<void> {
     };
   }
 
-  const userTool = tools(function createUser(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _userTool = tools(function createUser(
     name: string,
     email: string,
     theme: 'light' | 'dark' = 'light',
@@ -371,7 +377,8 @@ async function performanceOptimizationExample(): Promise<void> {
     console.log('1. Batching multiple operations...');
     const batchStart = Date.now();
 
-    const batchResponse = await client.chat.completions.create({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const _batchResponse = await client.chat.completions.create({
       model: 'Dhanishtha-2.0-preview',
       messages: [
         {
@@ -423,7 +430,7 @@ async function performanceOptimizationExample(): Promise<void> {
         }
         if (chunk.choices[0].finish_reason) break;
       }
-      console.log('   Streaming response received');
+      console.log('   Streaming response received, length:', streamContent.length);
     }
   } catch (error: any) {
     console.error('Error:', error.message || error);
@@ -439,7 +446,8 @@ async function errorHandlingExample(): Promise<void> {
   console.log('\n=== Example 8: Advanced Error Handling ===');
 
   // Define a tool that might fail
-  const unreliableTool = tools(function processData(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _unreliableTool = tools(function processData(
     data: string,
     shouldFail: boolean = false
   ): string {

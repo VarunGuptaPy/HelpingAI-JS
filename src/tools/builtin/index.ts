@@ -88,6 +88,7 @@ export function createBuiltinTool(
  */
 export async function executeBuiltinTool(
   toolName: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   args: Record<string, any>,
   config?: BuiltinToolConfig
 ): Promise<string> {
